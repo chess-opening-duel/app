@@ -269,7 +269,7 @@ jobs:
 
       - name: Free disk space
         if: steps.check.outputs.skip != 'true'
-        uses: kfir4444/free-disk-space@main
+        uses: kfir4444/free-disk-space@0f2cc361875b00eaca290d19f2176e58c664fb02 # main
         with:
           tool-cache: true
 
