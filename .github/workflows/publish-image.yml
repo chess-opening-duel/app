@@ -83,14 +83,14 @@ jobs:
           name: node-assets
           path: node-assets.tar.zst
           compression-level: 0
-          retention-days: 1
+          retention-days: 7
 
   # ===========================================================================
   # Phase 1b: Build Scala artifacts (per-platform, native runners)
   # ===========================================================================
   build-sbt:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - runner: ubuntu-latest
@@ -195,7 +195,7 @@ jobs:
           name: sbt-artifacts-${{ matrix.arch }}
           path: sbt-artifacts.tar.zst
           compression-level: 0
-          retention-days: 1
+          retention-days: 7
 
   # ===========================================================================
   # Phase 2: Assemble Docker image (per-platform)
@@ -203,7 +203,7 @@ jobs:
   docker-image:
     needs: [build-node, build-sbt]
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - runner: ubuntu-latest
@@ -269,7 +269,7 @@ jobs:
 
       - name: Free disk space
         if: steps.check.outputs.skip != 'true'
-        uses: kfir4444/free-disk-space@main
+        uses: kfir4444/free-disk-space@0f2cc361875b00eaca290d19f2176e58c664fb02 # main
         with:
           tool-cache: true
 
@@ -310,7 +310,7 @@ jobs:
         with:
           name: digest-${{ matrix.arch }}
           path: /tmp/digests/*
-          retention-days: 1
+          retention-days: 7
 
   # ===========================================================================
   # Phase 3: Create multi-platform manifest
