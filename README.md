@@ -1,5 +1,9 @@
 # Chess Opening Duel
 
+[![Release](https://img.shields.io/github/v/release/chess-opening-duel/app?label=release&logo=github)](https://github.com/chess-opening-duel/app/releases)
+[![Build](https://img.shields.io/github/actions/workflow/status/chess-opening-duel/app/publish-image.yml?branch=main&label=build&logo=github)](https://github.com/chess-opening-duel/app/actions/workflows/publish-image.yml)
+[![GHCR](https://ghcr-badge.egpl.dev/chess-opening-duel/app/latest_tag?trim=major&label=image)](https://github.com/chess-opening-duel/app/pkgs/container/app)
+
 A custom 1v1 chess game mode built on [lichess](https://github.com/lichess-org) [components](https://github.com/lichess-org/lila-docker). Players ban and pick from a pool of chess openings, then compete in a best-of-5 series starting from those positions.
 
 ## Screenshots
