@@ -26,56 +26,308 @@ on:
     tags:
       - 'v*'
 
-jobs:
-  build-and-publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Setup build variables
-        id: build_vars
-        run: |
-          echo "repo=${{ github.event.inputs.repo || 'chess-opening-duel/lila' }}" >> $GITHUB_OUTPUT
-          echo "branch=${{ github.event.inputs.branch || 'master' }}" >> $GITHUB_OUTPUT
-          if [ "${{ github.event.inputs.platforms || 'all' }}" = "all" ]; then
-            echo "platforms=linux/amd64,linux/arm64" >> $GITHUB_OUTPUT
-          else
-            echo "platforms=${{ github.event.inputs.platforms }}" >> $GITHUB_OUTPUT
-          fi
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  LILA_REPO: ${{ inputs.repo || 'chess-opening-duel/lila' }}
+  LILA_BRANCH: ${{ inputs.branch || 'master' }}
+  PLATFORMS: ${{ inputs.platforms || 'all' }}
 
+jobs:
+  # ===========================================================================
+  # Phase 1a: Build frontend assets (platform-independent)
+  # ===========================================================================
+  build-node:
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
       - name: Checkout lila
         uses: actions/checkout@v5
         with:
-          repository: ${{ steps.build_vars.outputs.repo }}
-          ref: ${{ steps.build_vars.outputs.branch }}
-          path: 'repos/lila'
+          repository: ${{ env.LILA_REPO }}
+          ref: ${{ env.LILA_BRANCH }}
+          path: repos/lila
+          submodules: recursive
+
+      - name: Copy mono.conf
+        run: cp conf/mono.conf repos/lila/conf/mono.conf
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: repos/lila/package.json
+
+      - name: Setup Node.js with cache
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: repos/lila/.node-version
+          cache: pnpm
+          cache-dependency-path: repos/lila/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: repos/lila
+        run: pnpm install
+
+      - name: Build frontend
+        working-directory: repos/lila
+        run: ./ui/build --no-install --debug
+
+      - name: Package assets
+        run: tar --zstd -cf node-assets.tar.zst -C repos/lila/public .
+
+      - name: Upload assets artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-assets
+          path: node-assets.tar.zst
+          compression-level: 0
+          retention-days: 1
+
+  # ===========================================================================
+  # Phase 1b: Build Scala artifacts (per-platform, native runners)
+  # ===========================================================================
+  build-sbt:
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: amd64
+            platform: linux/amd64
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+            platform: linux/arm64
+    runs-on: ${{ matrix.runner }}
+    env:
+      SBT_OPTS: '-Xmx2048M'
+    steps:
+      - name: Check platform filter
+        id: check
+        run: |
+          platforms="${{ env.PLATFORMS }}"
+          if [ "$platforms" = "all" ] || [ "$platforms" = "${{ matrix.platform }}" ]; then
+            echo "skip=false" >> $GITHUB_OUTPUT
+          else
+            echo "skip=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout repository
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/checkout@v5
+
+      - name: Checkout lila
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ env.LILA_REPO }}
+          ref: ${{ env.LILA_BRANCH }}
+          path: repos/lila
 
       - name: Checkout lila-ws
+        if: steps.check.outputs.skip != 'true'
         uses: actions/checkout@v5
         with:
-          repository: 'chess-opening-duel/lila-ws'
-          path: 'repos/lila-ws'
-
-      - name: Checkout lila-db-seed
-        uses: actions/checkout@v5
-        with:
-          repository: 'chess-opening-duel/db-seed'
-          path: 'repos/lila-db-seed'
+          repository: chess-opening-duel/lila-ws
+          path: repos/lila-ws
 
       - name: Checkout lila-fishnet
+        if: steps.check.outputs.skip != 'true'
         uses: actions/checkout@v5
         with:
-          repository: 'lichess-org/lila-fishnet'
-          path: 'repos/lila-fishnet'
+          repository: lichess-org/lila-fishnet
+          path: repos/lila-fishnet
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: Setup Java
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/setup-java@v5
         with:
-          image: tonistiigi/binfmt:qemu-v7.0.0
+          distribution: temurin
+          java-version: 25
+          cache: sbt
+
+      - name: Setup sbt
+        if: steps.check.outputs.skip != 'true'
+        uses: sbt/setup-sbt@v1
+
+      - name: Generate lila version info
+        if: steps.check.outputs.skip != 'true'
+        working-directory: repos/lila
+        run: |
+          TZ=UTC git log -1 --date=iso-strict-local \
+            --pretty='format:app.version.commit = "%H"%napp.version.date = "%ad"%napp.version.message = """%s"""%n' \
+            | tee conf/version.conf || true
+
+      - name: Build lila
+        if: steps.check.outputs.skip != 'true'
+        working-directory: repos/lila
+        run: ./lila.sh stage
+
+      - name: Build lila-ws
+        if: steps.check.outputs.skip != 'true'
+        working-directory: repos/lila-ws
+        run: sbt stage
+
+      - name: Build lila-fishnet
+        if: steps.check.outputs.skip != 'true'
+        working-directory: repos/lila-fishnet
+        run: sbt app/stage
+
+      - name: Package artifacts
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          mkdir -p staging/lila-target staging/lila-public staging/lila-conf
+          mkdir -p staging/lila-ws-target staging/lila-fishnet-target
+          cp -a repos/lila/target/. staging/lila-target/
+          cp -a repos/lila/public/. staging/lila-public/
+          cp -a repos/lila/conf/. staging/lila-conf/
+          cp repos/lila/bin/mongodb/indexes.js staging/lila-indexes.js
+          cp -a repos/lila-ws/target/. staging/lila-ws-target/
+          cp -a repos/lila-fishnet/app/target/. staging/lila-fishnet-target/
+          cd staging
+          tar --zstd -cf ../sbt-artifacts.tar.zst .
+
+      - name: Upload artifacts
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbt-artifacts-${{ matrix.arch }}
+          path: sbt-artifacts.tar.zst
+          compression-level: 0
+          retention-days: 1
+
+  # ===========================================================================
+  # Phase 2: Assemble Docker image (per-platform)
+  # ===========================================================================
+  docker-image:
+    needs: [build-node, build-sbt]
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: amd64
+            platform: linux/amd64
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+            platform: linux/arm64
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check platform filter
+        id: check
+        run: |
+          platforms="${{ env.PLATFORMS }}"
+          if [ "$platforms" = "all" ] || [ "$platforms" = "${{ matrix.platform }}" ]; then
+            echo "skip=false" >> $GITHUB_OUTPUT
+          else
+            echo "skip=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout repository
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/checkout@v5
+
+      - name: Checkout lila (for db indexes)
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ env.LILA_REPO }}
+          ref: ${{ env.LILA_BRANCH }}
+          path: repos/lila
+          sparse-checkout: bin/mongodb/indexes.js
+
+      - name: Checkout lila-db-seed
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/checkout@v5
+        with:
+          repository: chess-opening-duel/db-seed
+          path: repos/lila-db-seed
+
+      - name: Download node assets
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: node-assets
+
+      - name: Download sbt artifacts
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: sbt-artifacts-${{ matrix.arch }}
+
+      - name: Prepare build context
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          mkdir -p artifacts/node-public
+          tar --zstd -xf node-assets.tar.zst -C artifacts/node-public
+          tar --zstd -xf sbt-artifacts.tar.zst -C artifacts
+          mv artifacts/lila-indexes.js artifacts/lila-indexes
+
+      - name: Free disk space
+        if: steps.check.outputs.skip != 'true'
+        uses: kfir4444/free-disk-space@main
+        with:
+          tool-cache: true
+
+      - name: Set up Docker Buildx
+        if: steps.check.outputs.skip != 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        if: steps.check.outputs.skip != 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push by digest
+        if: steps.check.outputs.skip != 'true'
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/mono.Dockerfile
+          platforms: ${{ matrix.platform }}
+          cache-from: type=gha,scope=mono-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=mono-${{ matrix.arch }}
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export digest
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ matrix.arch }}
+          path: /tmp/digests/*
+          retention-days: 1
+
+  # ===========================================================================
+  # Phase 3: Create multi-platform manifest
+  # ===========================================================================
+  manifest:
+    needs: docker-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digest-*
+          merge-multiple: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -83,7 +335,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -91,23 +343,19 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}}
-            type=raw,prefix=lila-,value=${{ steps.build_vars.outputs.branch }}
+            type=raw,prefix=lila-,value=${{ env.LILA_BRANCH }}
             type=raw,value=latest
 
-      - name: Free disk space on Ubuntu runner
-        uses: kfir4444/free-disk-space@main
-        with:
-          tool-cache: true
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@sha256:%s ' *)
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: ${{ steps.build_vars.outputs.platforms }}
-          file: docker/mono.Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
