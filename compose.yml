@@ -76,7 +76,7 @@ services:
       - base
 
   mono:
-    image: ghcr.io/ootzk/chess-opening-duel:${MONO_TAG:-latest}
+    image: ghcr.io/chess-opening-duel/app:${MONO_TAG:-latest}
     restart: unless-stopped
     ports:
       - 8080:8080

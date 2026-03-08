@@ -6,7 +6,7 @@ on:
       repo:
         description: 'Lila repository to build'
         required: false
-        default: 'Ootzk/chess-opening-duel-lila'
+        default: 'chess-opening-duel/lila'
         type: string
       branch:
         description: 'Branch to build'
@@ -36,7 +36,7 @@ jobs:
       - name: Setup build variables
         id: build_vars
         run: |
-          echo "repo=${{ github.event.inputs.repo || 'Ootzk/chess-opening-duel-lila' }}" >> $GITHUB_OUTPUT
+          echo "repo=${{ github.event.inputs.repo || 'chess-opening-duel/lila' }}" >> $GITHUB_OUTPUT
           echo "branch=${{ github.event.inputs.branch || 'master' }}" >> $GITHUB_OUTPUT
           if [ "${{ github.event.inputs.platforms || 'all' }}" = "all" ]; then
             echo "platforms=linux/amd64,linux/arm64" >> $GITHUB_OUTPUT
@@ -57,13 +57,13 @@ jobs:
       - name: Checkout lila-ws
         uses: actions/checkout@v5
         with:
-          repository: 'Ootzk/chess-opening-duel-lila-ws'
+          repository: 'chess-opening-duel/lila-ws'
           path: 'repos/lila-ws'
 
       - name: Checkout lila-db-seed
         uses: actions/checkout@v5
         with:
-          repository: 'Ootzk/chess-opening-duel-db-seed'
+          repository: 'chess-opening-duel/db-seed'
           path: 'repos/lila-db-seed'
 
       - name: Checkout lila-fishnet

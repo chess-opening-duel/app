@@ -159,7 +159,7 @@ chess-opening-duel/                 # lila-docker 포크 (메인)
 ├── scripts/                        # 헬퍼 스크립트
 ├── lila-docker                     # 실행 스크립트
 └── repos/                          # Git submodules
-    ├── lila/                       → chess-opening-duel-lila (Scala, 메인 서버)
+    ├── lila/                       → chess-opening-duel/lila (Scala, 메인 서버)
     ├── scalachess/                 → lichess-org/scalachess (체스 엔진, 원본)
     └── chessground/                → lichess-org/chessground (보드 UI, 원본)
 ```
@@ -184,7 +184,7 @@ docker compose exec lila ./lila.sh playRoutes  # 라우트 변경 시
 
 ## 릴리스 내역
 
-→ [GitHub Releases](https://github.com/Ootzk/chess-opening-duel/releases) 참조
+→ [GitHub Releases](https://github.com/chess-opening-duel/app/releases) 참조
 
 ## 버전 관리 및 Git
 

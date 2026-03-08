@@ -128,7 +128,7 @@ Navigate to any opening page and use the **"Play as White" / "Play as Black"** b
 docker run -d --name chess-duel \
   -p 8080:8080 \
   -v chess-data:/seeded \
-  ghcr.io/ootzk/chess-opening-duel:latest
+  ghcr.io/chess-opening-duel/app:latest
 ```
 
 Open http://localhost:8080 and log in with any seeded account (password: `password`).
@@ -138,7 +138,7 @@ Open http://localhost:8080 and log in with any seeded account (password: `passwo
 See [CLAUDE.md](CLAUDE.md) for the full development guide, including Docker Compose setup, build commands, and project architecture.
 
 ```bash
-git clone --recursive https://github.com/Ootzk/chess-opening-duel.git
+git clone --recursive https://github.com/chess-opening-duel/app.git
 cd chess-opening-duel
 ./lila-docker start
 ```
