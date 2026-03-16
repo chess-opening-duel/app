@@ -88,6 +88,9 @@ const users = [
   // Pair 29: gabriela + guang (Mobile viewport - Finished page scroll)
   { username: 'gabriela', password: 'password', file: '.auth/gabriela.json' },
   { username: 'guang', password: 'password', file: '.auth/guang.json' },
+  // Pair 30: akeem + rudra (Opening color mismatch bug)
+  { username: 'akeem', password: 'password', file: '.auth/akeem.json' },
+  { username: 'rudra', password: 'password', file: '.auth/rudra.json' },
   // Solo: mateo (AI Opening Duel)
   { username: 'mateo', password: 'password', file: '.auth/mateo.json' },
 ];
