@@ -151,6 +151,10 @@ jobs:
         if: steps.check.outputs.skip != 'true'
         uses: sbt/setup-sbt@v1
 
+      - name: Copy mono.conf
+        if: steps.check.outputs.skip != 'true'
+        run: cp conf/mono.conf repos/lila/conf/mono.conf
+
       - name: Generate lila version info
         if: steps.check.outputs.skip != 'true'
         working-directory: repos/lila
