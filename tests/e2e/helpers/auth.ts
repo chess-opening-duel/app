@@ -93,6 +93,9 @@ export const users = {
   // Pair 29: Mobile viewport - Finished page scroll
   gabriela: { username: 'gabriela', password: 'password', storageState: '.auth/gabriela.json' },
   guang: { username: 'guang', password: 'password', storageState: '.auth/guang.json' },
+  // Pair 30: Opening color mismatch bug (same opening, different colors)
+  akeem: { username: 'akeem', password: 'password', storageState: '.auth/akeem.json' },
+  rudra: { username: 'rudra', password: 'password', storageState: '.auth/rudra.json' },
   // Solo: AI Opening Duel (vs Stockfish)
   mateo: { username: 'mateo', password: 'password', storageState: '.auth/mateo.json' },
 } as const;
