@@ -25,20 +25,19 @@ import { verifyOpeningsTab } from '../helpers/openings-tab';
  * - Clicking X shows confirm dialog, confirming forfeits the entire series
  * - Forfeit ends current game (resign if moves played, abort if not) and series
  *
- * | # | P1 | P2 | Scenario | Expected |
- * |---|----|----|----------|----------|
- * | 9 | fatima | diego | Forfeit after moves | Game resign, series finished, P2 wins |
- * | 10 | salma | benjamin | Forfeit before moves | Game abort, series finished, P2 wins |
+ * | P1 | P2 | Scenario | Expected |
+ * |----|----|----------|----------|
+ * | fatima | diego | Forfeit after moves | Game resign, series finished, P2 wins |
+ * | salma | benjamin | Forfeit before moves | Game abort, series finished, P2 wins |
  */
 
-// ===== Test 9: Forfeit during active game (after moves) =====
-test.describe('Test 9: fatima vs diego (Forfeit after moves)', () => {
+test.describe('fatima vs diego: Forfeit after moves @phase:pick @phase:ban @phase:game @feature:forfeit @scope:quick', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['fatima', 'diego'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 9] Forfeit after moves → game resign, series finished', async ({ browser }) => {
+  test('Forfeit after moves → game resign, series finished', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.fatima,
@@ -91,7 +90,7 @@ test.describe('Test 9: fatima vs diego (Forfeit after moves)', () => {
 
         const buttons = ricons.locator('button.fbt');
         const buttonCount = await buttons.count();
-        console.log(`[Test 9] Button count in .ricons: ${buttonCount}`);
+        console.log(`[Forfeit Moves] Button count in .ricons: ${buttonCount}`);
         // 4 action buttons + analysis + board menu = 6 (but analysis may not be visible during play)
         expect(buttonCount).toBeGreaterThanOrEqual(4);
 
@@ -136,7 +135,7 @@ test.describe('Test 9: fatima vs diego (Forfeit after moves)', () => {
         // Player ordering depends on random color, not who created the challenge
         const fatimaIndex = await getPlayerIndex(player1, seriesId, 'fatima');
         const winner = await getSeriesWinner(player1, seriesId);
-        console.log(`[Test 9] fatima index: ${fatimaIndex}, winner index: ${winner}`);
+        console.log(`[Forfeit Moves] fatima index: ${fatimaIndex}, winner index: ${winner}`);
         // fatima forfeits → the opponent (diego) should win
         expect(winner).not.toBeNull();
         expect(fatimaIndex).not.toBeNull();
@@ -168,14 +167,13 @@ test.describe('Test 9: fatima vs diego (Forfeit after moves)', () => {
   });
 });
 
-// ===== Test 10: Forfeit at game start (no moves) =====
-test.describe('Test 10: salma vs benjamin (Forfeit before moves)', () => {
+test.describe('salma vs benjamin: Forfeit before moves @phase:pick @phase:ban @phase:game @feature:forfeit @scope:quick', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['salma', 'benjamin'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 10] Forfeit before moves → game abort, series finished', async ({ browser }) => {
+  test('Forfeit before moves → game abort, series finished', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.salma,
@@ -243,7 +241,7 @@ test.describe('Test 10: salma vs benjamin (Forfeit before moves)', () => {
         // Player ordering depends on random color, not who created the challenge
         const salmaIndex = await getPlayerIndex(player1, seriesId, 'salma');
         const winner = await getSeriesWinner(player1, seriesId);
-        console.log(`[Test 10] salma index: ${salmaIndex}, winner index: ${winner}`);
+        console.log(`[Forfeit No Moves] salma index: ${salmaIndex}, winner index: ${winner}`);
         // salma forfeits → the opponent (benjamin) should win
         expect(winner).not.toBeNull();
         expect(salmaIndex).not.toBeNull();

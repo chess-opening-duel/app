@@ -91,6 +91,9 @@ const users = [
   // Pair 30: akeem + rudra (Opening color mismatch bug)
   { username: 'akeem', password: 'password', file: '.auth/akeem.json' },
   { username: 'rudra', password: 'password', file: '.auth/rudra.json' },
+  // NoStart timer delayed (separate pair from NoStart second mover)
+  { username: 'monica', password: 'password', file: '.auth/monica.json' },
+  { username: 'yun', password: 'password', file: '.auth/yun.json' },
   // Solo: mateo (AI Opening Duel)
   { username: 'mateo', password: 'password', file: '.auth/mateo.json' },
 ];

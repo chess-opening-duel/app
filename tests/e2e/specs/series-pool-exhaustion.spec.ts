@@ -21,20 +21,19 @@ import {
  * Total pool = 6 openings. After 6 consecutive draws, all openings are used
  * and the pool is empty. The series finishes with a tied score (3-3).
  *
- * | # | P1 | P2 | Scenario |
- * |---|----|----|----------|
- * | 17 | dmitry | milena | 6 draws → pool exhaustion → series Draw |
+ * | P1 | P2 | Scenario |
+ * |----|----|----------|
+ * | dmitry | milena | 6 draws → pool exhaustion → series Draw |
  */
 
-// ===== Test 17: Pool Exhaustion → Series Draw =====
-test.describe('Test 17: dmitry vs milena (Pool exhaustion → series Draw)', () => {
+test.describe('dmitry vs milena: Pool exhaustion → series Draw @phase:pick @phase:ban @phase:game @phase:resting @feature:pool @scope:slow', () => {
   // 6 games (draws) + ban/pick phase + resting phases + RandomSelecting (~13s each: roulette + showcase) + buffer
   test.describe.configure({ timeout: 300000 });
 
   const pairUsers = ['dmitry', 'milena'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 17] 6 consecutive draws → pool exhaustion → Draw banner', async ({ browser }) => {
+  test('6 consecutive draws → pool exhaustion → Draw banner', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.dmitry,
@@ -59,7 +58,7 @@ test.describe('Test 17: dmitry vs milena (Pool exhaustion → series Draw)', () 
         await loginBothPlayers(player1, player2, users.dmitry, users.milena);
         seriesId = await createSeriesChallenge(player1, player2, 'milena');
         await takeScreenshot('series-created', player1);
-        console.log(`[Test 17] Series created: ${seriesId}`);
+        console.log(`[Pool Exhaustion] Series created: ${seriesId}`);
       });
 
       // ===== STEP 2: Complete Ban/Pick Phase =====
@@ -112,7 +111,7 @@ test.describe('Test 17: dmitry vs milena (Pool exhaustion → series Draw)', () 
         await takeScreenshot('finished-draw-p1', player1);
         await takeScreenshot('finished-draw-p2', player2);
 
-        console.log(`[Test 17] Both players see Draw banner. Series ${seriesId} ended as draw.`);
+        console.log(`[Pool Exhaustion] Both players see Draw banner. Series ${seriesId} ended as draw.`);
       });
     } finally {
       await player1Context.close();

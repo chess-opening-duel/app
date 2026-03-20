@@ -35,7 +35,7 @@ import {
  * | mateo | Solo vs Stockfish level 1, verify AI move, then forfeit |
  */
 
-test.describe('AI Opening Duel: mateo vs Stockfish', () => {
+test.describe('AI Opening Duel: mateo vs Stockfish @phase:pick @phase:ban @phase:game @feature:ai @scope:slow', () => {
   test.describe.configure({ timeout: 180000 });
 
   const testUsers = ['mateo'];

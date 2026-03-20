@@ -9,7 +9,7 @@ import {
 } from '../helpers/series';
 
 /**
- * Test 23: Opening Pool Customize → Pick Phase 검증
+ * Opening Pool Customize → Pick Phase 검증
  *
  * 시나리오:
  * 1. P1(ramesh)이 기본 pool에서 5개 오프닝을 X 버튼으로 삭제
@@ -71,12 +71,12 @@ function makeScreenshot(testInfo: typeof test) {
   };
 }
 
-test.describe('Test 23: Pool Customize → Pick Phase Verification', () => {
+test.describe('Pool Customize → Pick Phase Verification @phase:pick @phase:ban @feature:pool @scope:quick', () => {
   test.beforeAll(() => {
     cleanupPairData(pairUsers);
   });
 
-  test('[Test 23] 커스텀 pool로 시리즈 생성 시 Pick Phase에 새 오프닝 표시', async ({ browser }) => {
+  test('커스텀 pool로 시리즈 생성 시 Pick Phase에 새 오프닝 표시', async ({ browser }) => {
     test.setTimeout(120_000);
     const screenshot = makeScreenshot(test);
     const { player1Context, player2Context, player1, player2 } =
@@ -127,7 +127,7 @@ test.describe('Test 23: Pool Customize → Pick Phase Verification', () => {
           const text = await nameLinks.nth(i).textContent();
           if (text) remainingNames.push(text.trim());
         }
-        console.log('[Test 23] Remaining pool openings:', remainingNames);
+        console.log('[Pool Customize] Remaining pool openings:', remainingNames);
       });
 
       // ===== Step 2.5: 승률 불균형 오프닝(Bongcloud) 추가 차단 검증 =====
@@ -152,13 +152,13 @@ test.describe('Test 23: Pool Customize → Pick Phase Verification', () => {
           // tooltip 확인: "Win rate too imbalanced" 포함
           const whiteTitle = await whiteBtn.getAttribute('title');
           expect(whiteTitle).toContain('Win rate too imbalanced');
-          console.log(`[Test 23] ✓ Imbalanced tooltip: "${whiteTitle}"`);
+          console.log(`[Pool Customize] ✓ Imbalanced tooltip: "${whiteTitle}"`);
 
-          console.log('[Test 23] ✓ Bongcloud buttons disabled (win rate imbalanced)');
+          console.log('[Pool Customize] ✓ Bongcloud buttons disabled (win rate imbalanced)');
           await screenshot('02.5-bongcloud-blocked', player1);
         } else {
           // exactOpening이 아니면 버튼 자체가 없을 수 있음
-          console.log('[Test 23] ✓ Bongcloud has no add buttons (not exactOpening)');
+          console.log('[Pool Customize] ✓ Bongcloud has no add buttons (not exactOpening)');
         }
       });
 
@@ -185,10 +185,10 @@ test.describe('Test 23: Pool Customize → Pick Phase Verification', () => {
             addedNames.push(opening.name);
             await screenshot(`03-added-${opening.name.replace(/\s+/g, '-')}`, player1);
           } else {
-            console.log(`[Test 23] Warning: Add button not visible for ${opening.name} at ${opening.url}`);
+            console.log(`[Pool Customize] Warning: Add button not visible for ${opening.name} at ${opening.url}`);
           }
         }
-        console.log('[Test 23] Added openings:', addedNames);
+        console.log('[Pool Customize] Added openings:', addedNames);
         expect(addedNames.length).toBeGreaterThanOrEqual(3); // 최소 3개는 추가되어야 함
       });
 
@@ -215,7 +215,7 @@ test.describe('Test 23: Pool Customize → Pick Phase Verification', () => {
         await expect(btn).toBeDisabled();
         const titleText = await btn.getAttribute('title');
         expect(titleText).toBe('Already in your pool');
-        console.log(`[Test 23] ✓ "Already in your pool" tooltip on ${firstAdded.name} (${firstAdded.color})`);
+        console.log(`[Pool Customize] ✓ "Already in your pool" tooltip on ${firstAdded.name} (${firstAdded.color})`);
         await screenshot('04.5-already-in-pool-tooltip', player1);
       });
 
@@ -231,10 +231,10 @@ test.describe('Test 23: Pool Customize → Pick Phase Verification', () => {
           await expect(btn).toBeDisabled();
           const titleText = await btn.getAttribute('title');
           expect(titleText).toBe('Pool is full (10/10)');
-          console.log(`[Test 23] ✓ "Pool is full (10/10)" tooltip on ${notInPool.name}`);
+          console.log(`[Pool Customize] ✓ "Pool is full (10/10)" tooltip on ${notInPool.name}`);
           await screenshot('04.6-pool-full-tooltip', player1);
         } else {
-          console.log(`[Test 23] ✓ ${notInPool.name} has no add buttons (not exactOpening)`);
+          console.log(`[Pool Customize] ✓ ${notInPool.name} has no add buttons (not exactOpening)`);
         }
       });
 
@@ -243,7 +243,7 @@ test.describe('Test 23: Pool Customize → Pick Phase Verification', () => {
       await test.step('P1 & P2: Opening Duel 생성', async () => {
         await loginBothPlayers(player1, player2, p1User, p2User);
         seriesId = await createSeriesChallenge(player1, player2, p2Username);
-        console.log(`[Test 23] Series created: ${seriesId}`);
+        console.log(`[Pool Customize] Series created: ${seriesId}`);
       });
 
       // ===== Step 5: Pick Phase에서 오프닝 이름 검증 =====
@@ -260,14 +260,14 @@ test.describe('Test 23: Pool Customize → Pick Phase Verification', () => {
           const text = await openingNameEls.nth(i).textContent();
           if (text) pickPhaseNames.push(text.trim());
         }
-        console.log('[Test 23] Pick phase openings:', pickPhaseNames);
+        console.log('[Pool Customize] Pick phase openings:', pickPhaseNames);
         expect(pickPhaseNames.length).toBe(10);
 
         // 새로 추가한 오프닝이 Pick Phase에 포함되는지 확인
         for (const name of addedNames) {
           const found = pickPhaseNames.some(n => n.includes(name) || name.includes(n));
           expect(found).toBeTruthy();
-          console.log(`[Test 23] ✓ Found "${name}" in pick phase`);
+          console.log(`[Pool Customize] ✓ Found "${name}" in pick phase`);
         }
 
         // 삭제한 오프닝이 Pick Phase에 없는지 확인
@@ -276,10 +276,10 @@ test.describe('Test 23: Pool Customize → Pick Phase Verification', () => {
         for (const name of removedNames) {
           const found = pickPhaseNames.some(n => n === name);
           if (found) {
-            console.log(`[Test 23] ✗ Removed opening "${name}" still found in pick phase!`);
+            console.log(`[Pool Customize] ✗ Removed opening "${name}" still found in pick phase!`);
           }
           expect(found).toBeFalsy();
-          console.log(`[Test 23] ✓ Removed opening "${name}" not in pick phase`);
+          console.log(`[Pool Customize] ✓ Removed opening "${name}" not in pick phase`);
         }
 
         await screenshot('06-pick-phase-verified', player1);
