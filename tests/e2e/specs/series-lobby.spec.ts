@@ -18,18 +18,18 @@ import {
  * - Both redirected to /series/{id}/pick (no challenge accept step)
  * - Completes ban/pick, plays one game, verifies series is active
  *
- * | Test | P1 | P2 | Scenario |
- * |------|----|----|----------|
- * | 27   | elizabeth | dae | Lobby hook matching → series → ban/pick → game |
+ * | P1 | P2 | Scenario |
+ * |----|----|----------|
+ * | elizabeth | dae | Lobby hook matching → series → ban/pick → game |
  */
 
-test.describe('Test 27: elizabeth vs dae (Lobby matching)', () => {
+test.describe('elizabeth vs dae: Lobby matching @phase:pick @phase:ban @phase:game @feature:lobby @scope:quick', () => {
   test.describe.configure({ timeout: 180000 });
 
   const pairUsers = ['elizabeth', 'dae'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 27] Opening Duel with Anyone → series creation → game', async ({ browser }) => {
+  test('Opening Duel with Anyone → series creation → game', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } =
       await createTwoPlayerContexts(browser, users.elizabeth, users.dae);
 

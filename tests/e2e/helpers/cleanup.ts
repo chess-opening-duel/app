@@ -22,7 +22,7 @@ export function cleanupPairData(users: string[]): void {
       db.opening_pool.deleteMany({ "_id": { $in: ${JSON.stringify(users)} } });
     `.replace(/\n/g, ' ');
     execSync(
-      `docker exec chess-opening-duel-mongodb-1 mongosh lichess --quiet --eval '${mongoCommand}'`,
+      `docker exec app-mongodb-1 mongosh lichess --quiet --eval '${mongoCommand}'`,
       { encoding: 'utf-8', timeout: 10000 }
     );
   } catch {
