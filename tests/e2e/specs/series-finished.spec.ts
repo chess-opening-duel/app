@@ -26,20 +26,19 @@ import {
  * - Rematch offer → opponent sees glowing button → accept → new series
  * - Home button navigation
  *
- * | # | P1 | P2 | Scenario |
- * |---|----|----|----------|
- * | 11 | patricia | adriana | 3-0 sweep → finished page + rematch flow |
+ * | P1 | P2 | Scenario |
+ * |----|----|----------|
+ * | patricia | adriana | 3-0 sweep → finished page + rematch flow |
  */
 
-// ===== Test 11: Finished Page + Rematch =====
-test.describe('Test 11: patricia vs adriana (Finished page + Rematch)', () => {
+test.describe('patricia vs adriana: Finished page + Rematch', () => {
   // 3-game sweep (fast) + rematch flow
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['patricia', 'adriana'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 11] Finished page UI + rematch offer/accept', async ({ browser }) => {
+  test('Finished page UI + rematch offer/accept', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.patricia,
@@ -64,9 +63,9 @@ test.describe('Test 11: patricia vs adriana (Finished page + Rematch)', () => {
         await loginBothPlayers(player1, player2, users.patricia, users.adriana);
         seriesId = await createSeriesChallenge(player1, player2, 'adriana');
         await takeScreenshot('series-created', player1);
-        console.log(`[Test 11] Series created: ${seriesId}`);
-        console.log(`[Test 11] P1 URL: ${player1.url()}`);
-        console.log(`[Test 11] P2 URL: ${player2.url()}`);
+        console.log(`[Finished] Series created: ${seriesId}`);
+        console.log(`[Finished] P1 URL: ${player1.url()}`);
+        console.log(`[Finished] P2 URL: ${player2.url()}`);
       });
 
       // ===== STEP 2: Complete Ban/Pick Phase =====
@@ -188,7 +187,7 @@ test.describe('Test 11: patricia vs adriana (Finished page + Rematch)', () => {
         await takeScreenshot('rematch-new-series-p1', player1);
         await takeScreenshot('rematch-new-series-p2', player2);
 
-        console.log(`[Test 11] Rematch: old series=${seriesId}, new series=${newSeriesIdP1}`);
+        console.log(`[Finished] Rematch: old series=${seriesId}, new series=${newSeriesIdP1}`);
       });
     } finally {
       await player1Context.close();

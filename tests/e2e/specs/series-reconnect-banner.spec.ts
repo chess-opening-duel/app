@@ -17,19 +17,19 @@ import {
  * returning to the home page shows a "Series in Progress" banner with a
  * "Return to Series" button that redirects back to the correct series page.
  *
- * | # | P1 | P2 | Phase | Action | Expected |
- * |---|----|----|-------|--------|----------|
- * | 26a | frances | emmanuel | Pick | P2 navigates to home | Banner visible, click returns to pick page |
- * | 26b | frances | emmanuel | Ban | P2 navigates to home | Banner visible, click returns to pick page |
+ * | P1 | P2 | Phase | Action | Expected |
+ * |----|----|-------|--------|----------|
+ * | frances | emmanuel | Pick | P2 navigates to home | Banner visible, click returns to pick page |
+ * | frances | emmanuel | Ban | P2 navigates to home | Banner visible, click returns to pick page |
  */
 
-test.describe('Test 26: frances vs emmanuel (Reconnection banner)', () => {
+test.describe('frances vs emmanuel: Reconnection banner', () => {
   test.describe.configure({ timeout: 90000 });
 
   const pairUsers = ['frances', 'emmanuel'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 26] Reconnection banner shows on home page during Pick/Ban phases', async ({ browser }) => {
+  test('Reconnection banner shows on home page during Pick/Ban phases', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.frances,

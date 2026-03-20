@@ -20,21 +20,20 @@ import {
  * Strategy: Play the series on desktop viewport (board clicks need space),
  * then switch to mobile viewport on the finished page to verify scrollability.
  *
- * | # | P1 | P2 | Scenario |
- * |---|----|----|----------|
- * | 29 | gabriela | guang | 3-0 sweep → mobile finished page table scroll |
+ * | P1 | P2 | Scenario |
+ * |----|----|----------|
+ * | gabriela | guang | 3-0 sweep → mobile finished page table scroll |
  */
 
 const MOBILE_VIEWPORT = { width: 320, height: 568 };
 
-// ===== Test 29: Finished Page Mobile Scroll =====
-test.describe('Test 29: gabriela vs guang (Finished page mobile scroll)', () => {
+test.describe('gabriela vs guang: Finished page mobile scroll', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['gabriela', 'guang'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 29] Score table is scrollable on mobile viewport', async ({ browser }) => {
+  test('Score table is scrollable on mobile viewport', async ({ browser }) => {
     // Play series on desktop viewport (board clicks require adequate size)
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
@@ -59,7 +58,7 @@ test.describe('Test 29: gabriela vs guang (Finished page mobile scroll)', () => 
       await test.step('Create series', async () => {
         await loginBothPlayers(player1, player2, users.gabriela, users.guang);
         seriesId = await createSeriesChallenge(player1, player2, 'guang');
-        console.log(`[Test 29] Series created: ${seriesId}`);
+        console.log(`[Finished Mobile] Series created: ${seriesId}`);
       });
 
       // ===== STEP 2: Complete Ban/Pick Phase =====
@@ -102,7 +101,7 @@ test.describe('Test 29: gabriela vs guang (Finished page mobile scroll)', () => 
           overflowX: getComputedStyle(el).overflowX,
         }));
 
-        console.log(`[Test 29] Score table scroll info:`, scrollInfo);
+        console.log(`[Finished Mobile] Score table scroll info:`, scrollInfo);
 
         // overflow-x should be 'auto' (CSS fix enables scrolling when content overflows)
         expect(scrollInfo.overflowX).toBe('auto');

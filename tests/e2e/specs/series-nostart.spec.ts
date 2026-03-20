@@ -36,20 +36,19 @@ import {
  * - isMandatory = true → NoStart gives opponent the win (Status.NoStart)
  * - isDisconnectForfeit = false → series continues (not series-wide forfeit)
  *
- * | # | P1 | P2 | Scenario | Expected |
- * |---|----|----|----------|----------|
- * | 21 | yunel | idris | Neither player moves | First mover (startColor) loses, opponent +1pt |
- * | 22 | aleksandr | veer | First mover moves, second doesn't | Second mover loses, first mover +1pt |
+ * | P1 | P2 | Scenario | Expected |
+ * |----|----|----|----------|
+ * | yunel | idris | Neither player moves | First mover (startColor) loses, opponent +1pt |
+ * | aleksandr | veer | First mover moves, second doesn't | Second mover loses, first mover +1pt |
  */
 
-// ===== Test 21: NoStart - neither player moves =====
-test.describe('Test 21: yunel vs idris (NoStart - neither moves)', () => {
+test.describe('yunel vs idris: NoStart - neither moves', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['yunel', 'idris'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 21] Neither player moves → first mover loses via NoStart', async ({ browser }) => {
+  test('Neither player moves → first mover loses via NoStart', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.yunel,
@@ -92,13 +91,13 @@ test.describe('Test 21: yunel vs idris (NoStart - neither moves)', () => {
         const gameId = getGameIdFromUrl(player1.url());
         if (gameId) {
           const gameState = await getGameState(player1, gameId);
-          console.log(`[Test 21] White: ${gameState.whitePlayer}, Black: ${gameState.blackPlayer}`);
+          console.log(`[NoStart Neither] White: ${gameState.whitePlayer}, Black: ${gameState.blackPlayer}`);
         }
       });
 
       // Step 4: Wait for NoStart to fire (~26s) → Resting UI appears
       await test.step('Wait for NoStart timeout → Resting phase', async () => {
-        console.log('[Test 21] Waiting for NoStart timeout (~26 seconds)...');
+        console.log('[NoStart Neither] Waiting for NoStart timeout (~26 seconds)...');
 
         // NoStart fires at ~26s from game creation, series transitions to Resting
         await Promise.all([
@@ -108,7 +107,7 @@ test.describe('Test 21: yunel vs idris (NoStart - neither moves)', () => {
 
         await takeScreenshot('resting-after-nostart-p1', player1);
         await takeScreenshot('resting-after-nostart-p2', player2);
-        console.log('[Test 21] Resting UI appeared - NoStart fired successfully');
+        console.log('[NoStart Neither] Resting UI appeared - NoStart fired successfully');
       });
 
       // Step 5: Verify series score via API
@@ -120,7 +119,7 @@ test.describe('Test 21: yunel vs idris (NoStart - neither moves)', () => {
             headers: { Accept: 'application/json' },
           });
           const body = await response.text();
-          console.log(`[Test 21] API attempt ${attempt}: status=${response.status()}, body=${body.slice(0, 200)}`);
+          console.log(`[NoStart Neither] API attempt ${attempt}: status=${response.status()}, body=${body.slice(0, 200)}`);
 
           if (response.ok()) {
             data = JSON.parse(body);
@@ -134,7 +133,7 @@ test.describe('Test 21: yunel vs idris (NoStart - neither moves)', () => {
         const p0Score = players[0].score;
         const p1Score = players[1].score;
 
-        console.log(`[Test 21] Scores: P0=${p0Score}, P1=${p1Score}`);
+        console.log(`[NoStart Neither] Scores: P0=${p0Score}, P1=${p1Score}`);
 
         // API returns displayScore: win=1, draw=0.5, loss=0
         // Exactly one player should have 1 point, the other 0
@@ -150,7 +149,7 @@ test.describe('Test 21: yunel vs idris (NoStart - neither moves)', () => {
         // Verify series is now finished
         const finished = await isSeriesFinished(player1, seriesId, 5);
         expect(finished).toBe(true);
-        console.log('[Test 21] Series forfeited and finished');
+        console.log('[NoStart Neither] Series forfeited and finished');
       });
     } finally {
       await player1Context.close();
@@ -159,14 +158,13 @@ test.describe('Test 21: yunel vs idris (NoStart - neither moves)', () => {
   });
 });
 
-// ===== Test 22: NoStart - first mover moves, second mover doesn't =====
-test.describe('Test 22: aleksandr vs veer (NoStart - second mover doesn\'t move)', () => {
+test.describe('aleksandr vs veer: NoStart - second mover doesn\'t move', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['aleksandr', 'veer'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 22] First mover moves, second doesn\'t → second mover loses via NoStart', async ({ browser }) => {
+  test('First mover moves, second doesn\'t → second mover loses via NoStart', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.aleksandr,
@@ -209,11 +207,11 @@ test.describe('Test 22: aleksandr vs veer (NoStart - second mover doesn\'t move)
 
         if (p1IsFirstMover) {
           firstMoverUsername = 'aleksandr';
-          console.log('[Test 22] aleksandr is first mover (startColor) - making move');
+          console.log('[NoStart Second] aleksandr is first mover (startColor) - making move');
           await makeAnyMove(player1, 'aleksandr');
         } else {
           firstMoverUsername = 'veer';
-          console.log('[Test 22] veer is first mover (startColor) - making move');
+          console.log('[NoStart Second] veer is first mover (startColor) - making move');
           await makeAnyMove(player2, 'veer');
         }
 
@@ -221,12 +219,12 @@ test.describe('Test 22: aleksandr vs veer (NoStart - second mover doesn\'t move)
         await takeScreenshot('after-first-move-p2', player2);
 
         // Second mover does NOT move - wait for NoStart
-        console.log(`[Test 22] Second mover will NOT move. Waiting for NoStart...`);
+        console.log(`[NoStart Second] Second mover will NOT move. Waiting for NoStart...`);
       });
 
       // Step 4: Wait for NoStart to fire (~26s) → Resting UI appears
       await test.step('Wait for NoStart timeout → Resting phase', async () => {
-        console.log('[Test 22] Waiting for NoStart timeout (~26 seconds)...');
+        console.log('[NoStart Second] Waiting for NoStart timeout (~26 seconds)...');
 
         await Promise.all([
           waitForRestingUI(player1, 45000),
@@ -235,7 +233,7 @@ test.describe('Test 22: aleksandr vs veer (NoStart - second mover doesn\'t move)
 
         await takeScreenshot('resting-after-nostart-p1', player1);
         await takeScreenshot('resting-after-nostart-p2', player2);
-        console.log('[Test 22] Resting UI appeared - NoStart fired successfully');
+        console.log('[NoStart Second] Resting UI appeared - NoStart fired successfully');
       });
 
       // Step 5: Verify series score - first mover should have the point
@@ -247,7 +245,7 @@ test.describe('Test 22: aleksandr vs veer (NoStart - second mover doesn\'t move)
             headers: { Accept: 'application/json' },
           });
           const body = await response.text();
-          console.log(`[Test 22] API attempt ${attempt}: status=${response.status()}, body=${body.slice(0, 200)}`);
+          console.log(`[NoStart Second] API attempt ${attempt}: status=${response.status()}, body=${body.slice(0, 200)}`);
 
           if (response.ok()) {
             data = JSON.parse(body);
@@ -266,7 +264,7 @@ test.describe('Test 22: aleksandr vs veer (NoStart - second mover doesn\'t move)
         const firstMoverScore = players[firstMoverIdx].score;
         const secondMoverScore = players[secondMoverIdx].score;
 
-        console.log(`[Test 22] First mover (${firstMoverUsername}, idx=${firstMoverIdx}) score=${firstMoverScore}, Second mover score=${secondMoverScore}`);
+        console.log(`[NoStart Second] First mover (${firstMoverUsername}, idx=${firstMoverIdx}) score=${firstMoverScore}, Second mover score=${secondMoverScore}`);
 
         // API returns displayScore: win=1, draw=0.5, loss=0
         // First mover should have won (1 point), second mover should have 0
@@ -281,7 +279,7 @@ test.describe('Test 22: aleksandr vs veer (NoStart - second mover doesn\'t move)
 
         const finished = await isSeriesFinished(player1, seriesId, 5);
         expect(finished).toBe(true);
-        console.log('[Test 22] Series forfeited and finished');
+        console.log('[NoStart Second] Series forfeited and finished');
       });
     } finally {
       await player1Context.close();
@@ -290,15 +288,14 @@ test.describe('Test 22: aleksandr vs veer (NoStart - second mover doesn\'t move)
   });
 });
 
-// ===== Test 23: NoStart timer starts after RandomSelecting animation =====
-test.describe('Test 23: aleksandr vs veer (NoStart timer delayed until animation done)', () => {
+test.describe('aleksandr vs veer: NoStart timer delayed until animation done', () => {
   // 15s wait + Resting 30s + Selecting 30s + NoStart 26s + buffer
   test.describe.configure({ timeout: 240000 });
 
   const pairUsers = ['aleksandr', 'veer'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 23] 15s wait after animation → no NoStart, then Game 2 NoStart fires', async ({ browser }) => {
+  test('15s wait after animation → no NoStart, then Game 2 NoStart fires', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.aleksandr,
@@ -338,7 +335,7 @@ test.describe('Test 23: aleksandr vs veer (NoStart timer delayed until animation
 
         // Wait 15 seconds — longer than old effective NoStart window (~12s)
         // but shorter than correct timeForFirstMove (25s for Blitz)
-        console.log('[Test 23] Waiting 15 seconds after board visible...');
+        console.log('[NoStart Timer] Waiting 15 seconds after board visible...');
         await player1.waitForTimeout(15000);
 
         // Both players should still be able to move (NoStart hasn't fired)
@@ -346,7 +343,7 @@ test.describe('Test 23: aleksandr vs veer (NoStart timer delayed until animation
 
         // Both make their first move — proves neither was NoStart'd
         await playBothMoves(player1, player2, 'aleksandr', 'veer');
-        console.log('[Test 23] Both players moved after 15s wait — NoStart did NOT fire');
+        console.log('[NoStart Timer] Both players moved after 15s wait — NoStart did NOT fire');
         await takeScreenshot('game1-both-moved', player1);
       });
 
@@ -355,7 +352,7 @@ test.describe('Test 23: aleksandr vs veer (NoStart timer delayed until animation
       await test.step('Resign game 1 → transition to game 2', async () => {
         game1Id = getGameIdFromUrl(player1.url()) || '';
         await resignGame(player1);
-        console.log(`[Test 23] Game 1 (${game1Id}) resigned by aleksandr`);
+        console.log(`[NoStart Timer] Game 1 (${game1Id}) resigned by aleksandr`);
 
         // waitForNextGame handles: Resting → confirm → Selecting timeout → new game arrival
         await waitForNextGame(player1, player2, null, game1Id, 90000, takeScreenshot, 2);
@@ -368,7 +365,7 @@ test.describe('Test 23: aleksandr vs veer (NoStart timer delayed until animation
         await expect(player2.locator(gameSelectors.board)).toBeVisible({ timeout: 15000 });
         await takeScreenshot('game2-board-visible', player1);
 
-        console.log('[Test 23] Waiting for NoStart in Game 2...');
+        console.log('[NoStart Timer] Waiting for NoStart in Game 2...');
 
         // Wait for Resting UI (NoStart fires → game ends → Resting)
         await Promise.all([
@@ -376,7 +373,7 @@ test.describe('Test 23: aleksandr vs veer (NoStart timer delayed until animation
           waitForRestingUI(player2, 60000),
         ]);
         await takeScreenshot('resting-after-game2-nostart', player1);
-        console.log('[Test 23] NoStart fired in Game 2');
+        console.log('[NoStart Timer] NoStart fired in Game 2');
       });
 
       // Step 6: Verify scores — Game 1: veer won (aleksandr resigned), Game 2: NoStart
@@ -399,7 +396,7 @@ test.describe('Test 23: aleksandr vs veer (NoStart timer delayed until animation
         const players = data.players as Array<{ user?: { id: string }; score: number }>;
         const p0Score = players[0].score;
         const p1Score = players[1].score;
-        console.log(`[Test 23] Scores after 2 games: P0=${p0Score}, P1=${p1Score}`);
+        console.log(`[NoStart Timer] Scores after 2 games: P0=${p0Score}, P1=${p1Score}`);
 
         // Both games should have results (total score = 2)
         expect(p0Score + p1Score).toBe(2);
@@ -410,7 +407,7 @@ test.describe('Test 23: aleksandr vs veer (NoStart timer delayed until animation
         await forfeitSeriesViaApi(player1, seriesId);
         const finished = await isSeriesFinished(player1, seriesId, 5);
         expect(finished).toBe(true);
-        console.log('[Test 23] Series forfeited and finished');
+        console.log('[NoStart Timer] Series forfeited and finished');
       });
     } finally {
       await player1Context.close();

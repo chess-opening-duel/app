@@ -13,7 +13,7 @@ import {
 } from '../helpers/series';
 
 /**
- * Test 30: Opening Color Mismatch Bug (GitHub Issue #101)
+ * Opening Color Mismatch Bug (GitHub Issue #101)
  *
  * 재현 시나리오:
  * 1. P1(akeem)의 풀에 Najdorf 서브변형 5종을 white/black 양쪽으로 등록 (총 10칸)
@@ -120,12 +120,12 @@ function makeScreenshot(testInfo: typeof test) {
   };
 }
 
-test.describe('Test 30: Opening Color Mismatch Bug (#101)', () => {
+test.describe('Opening Color Mismatch Bug (#101)', () => {
   test.beforeAll(() => {
     cleanupPairData(pairUsers);
   });
 
-  test('[Test 30] 같은 오프닝 white/black 혼재 시 올바른 색상 배정', async ({ browser }) => {
+  test('같은 오프닝 white/black 혼재 시 올바른 색상 배정', async ({ browser }) => {
     test.setTimeout(180_000);
     const screenshot = makeScreenshot(test);
     const { player1Context, player2Context, player1, player2 } =
@@ -157,9 +157,9 @@ test.describe('Test 30: Opening Color Mismatch Bug (#101)', () => {
             `docker exec app-mongodb-1 mongosh lichess --quiet --file /tmp/test30-mongo.js`,
             { encoding: 'utf-8', timeout: 10000 },
           );
-          console.log('[Test 30] Pool set via MongoDB (Najdorf 5종 × white/black = 10)');
+          console.log('[Color Mismatch] Pool set via MongoDB (Najdorf 5종 × white/black = 10)');
         } catch (e) {
-          console.error('[Test 30] MongoDB pool setup failed:', e);
+          console.error('[Color Mismatch] MongoDB pool setup failed:', e);
           throw e;
         }
 
@@ -176,7 +176,7 @@ test.describe('Test 30: Opening Color Mismatch Bug (#101)', () => {
       await test.step('시리즈 생성', async () => {
         await loginBothPlayers(player1, player2, p1User, p2User);
         seriesId = await createSeriesChallenge(player1, player2, p2Username);
-        console.log(`[Test 30] Series created: ${seriesId}`);
+        console.log(`[Color Mismatch] Series created: ${seriesId}`);
       });
 
       // ===== Step 3: P1이 black 오프닝만 5개 선택 =====
@@ -189,7 +189,7 @@ test.describe('Test 30: Opening Color Mismatch Bug (#101)', () => {
           `${selectors.opening}.owner-black:not(.selected):not(.disabled)`,
         );
         const blackCount = await blackOpenings.count();
-        console.log(`[Test 30] Available black openings: ${blackCount}`);
+        console.log(`[Color Mismatch] Available black openings: ${blackCount}`);
         expect(blackCount).toBe(5);
 
         for (let i = 0; i < 5; i++) {
@@ -207,7 +207,7 @@ test.describe('Test 30: Opening Color Mismatch Bug (#101)', () => {
           .locator(`${selectors.openingSelected}.owner-black`)
           .count();
         expect(selectedBlack).toBe(5);
-        console.log('[Test 30] Selected 5 black openings (white counterparts exist in pool)');
+        console.log('[Color Mismatch] Selected 5 black openings (white counterparts exist in pool)');
 
         await screenshot('p1-picked-black-only', player1);
         await confirm(player1);
@@ -267,7 +267,7 @@ test.describe('Test 30: Opening Color Mismatch Bug (#101)', () => {
           await player1.waitForTimeout(1000);
         }
         expect(gameId).toBeTruthy();
-        console.log(`[Test 30] Game started: ${gameId}`);
+        console.log(`[Color Mismatch] Game started: ${gameId}`);
 
         // Series API에서 사용된 오프닝의 ownerColor 확인
         const seriesResponse = await player1.request.get(
@@ -285,14 +285,14 @@ test.describe('Test 30: Opening Color Mismatch Bug (#101)', () => {
         );
 
         console.log(
-          `[Test 30] Used opening: "${usedOpening?.name}", ownerColor: ${usedOpening?.ownerColor}, owner: ${usedOpening?.owner}, p1Index: ${p1Index}`,
+          `[Color Mismatch] Used opening: "${usedOpening?.name}", ownerColor: ${usedOpening?.ownerColor}, owner: ${usedOpening?.owner}, p1Index: ${p1Index}`,
         );
 
         // 핵심 검증: P1이 픽한 오프닝이면 ownerColor가 반드시 black이어야 함
         // (버그 상태: find(_.name == name)이 같은 이름의 white를 먼저 반환 → ownerColor가 white)
         if (usedOpening?.owner === p1Index) {
           expect(usedOpening.ownerColor).toBe('black');
-          console.log('[Test 30] ✓ P1 opening ownerColor is correctly "black" (not "white")');
+          console.log('[Color Mismatch] ✓ P1 opening ownerColor is correctly "black" (not "white")');
         }
 
         // Game Export API로 실제 게임 색상 확인
@@ -301,13 +301,13 @@ test.describe('Test 30: Opening Color Mismatch Bug (#101)', () => {
 
         const gameState = await getGameState(player1, gameId!);
         console.log(
-          `[Test 30] Game colors — White: ${gameState.whitePlayer}, Black: ${gameState.blackPlayer}`,
+          `[Color Mismatch] Game colors — White: ${gameState.whitePlayer}, Black: ${gameState.blackPlayer}`,
         );
 
         // P1의 오프닝이 사용됐으면, P1은 black을 맡아야 함
         if (usedOpening?.owner === p1Index) {
           expect(gameState.blackPlayer).toBe(p1Username.toLowerCase());
-          console.log(`[Test 30] ✓ P1(${p1Username}) is correctly playing BLACK`);
+          console.log(`[Color Mismatch] ✓ P1(${p1Username}) is correctly playing BLACK`);
         }
 
         // chessground orientation 확인
@@ -317,7 +317,7 @@ test.describe('Test 30: Opening Color Mismatch Bug (#101)', () => {
           el.classList.contains('orientation-white'),
         );
         const p1Color = isWhiteOrientation ? 'white' : 'black';
-        console.log(`[Test 30] P1 board orientation: ${p1Color}`);
+        console.log(`[Color Mismatch] P1 board orientation: ${p1Color}`);
 
         if (gameState.whitePlayer === p1Username.toLowerCase()) {
           expect(isWhiteOrientation).toBe(true);

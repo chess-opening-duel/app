@@ -4,7 +4,7 @@ import { users } from '../helpers/auth';
 const user = users.elena;
 
 test.describe('Opening Pool Page', () => {
-  test('[Test 20] Opening Pool 페이지 접근 및 렌더링 확인', async ({ browser }) => {
+  test('Opening Pool 페이지 접근 및 렌더링 확인', async ({ browser }) => {
     const context = await browser.newContext({ storageState: user.storageState });
     const page = await context.newPage();
 
@@ -42,7 +42,7 @@ test.describe('Opening Pool Page', () => {
     }
   });
 
-  test('[Test 20] 비로그인 상태에서 /opening-pool 접근 시 리다이렉트', async ({ browser }) => {
+  test('비로그인 상태에서 /opening-pool 접근 시 리다이렉트', async ({ browser }) => {
     const context = await browser.newContext();
     const page = await context.newPage();
 
@@ -58,7 +58,7 @@ test.describe('Opening Pool Page', () => {
 });
 
 test.describe('Opening Pool Table on all opening pages', () => {
-  test('[Test 21] 로그인 시 모든 opening 페이지에 pool 테이블 표시', async ({ browser }) => {
+  test('로그인 시 모든 opening 페이지에 pool 테이블 표시', async ({ browser }) => {
     const context = await browser.newContext({ storageState: user.storageState });
     const page = await context.newPage();
 
@@ -132,7 +132,7 @@ test.describe('Opening Pool Table on all opening pages', () => {
     }
   });
 
-  test('[Test 21] 비로그인 시 opening 페이지에 pool 테이블 미표시', async ({ browser }) => {
+  test('비로그인 시 opening 페이지에 pool 테이블 미표시', async ({ browser }) => {
     const context = await browser.newContext();
     const page = await context.newPage();
 

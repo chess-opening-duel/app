@@ -17,15 +17,15 @@ import {
  *
  * Test Scenario Matrix:
  *
- * | # | P1 | P2 | pick-p1 | pick-p2 | ban-p1 | ban-p2 | series result (p1) |
- * |---|----|----|---------|---------|--------|--------|-------------------|
- * | 0 | elena | hans | confirm | confirm | confirm | confirm | 0 - 1/2 - 1 - 1 |
- * | 1 | yulia | luis | confirm | full-timeout | confirm | none-timeout | 1 - 1 - 1 |
- * | 2 | ana | lola | full-timeout | confirm | none-timeout | confirm | 0 - 1 - 0 - 1 - 1/2 - 1 |
- * | 3 | carlos | nina | partial-timeout | confirm | confirm | partial-timeout | 0 - 0 - 1 - 1 - 1 |
- * | 4 | oscar | petra | confirm | partial-timeout | partial-timeout | confirm | 1 - 1/2 - 1 |
- * | 5 | boris | david | none-timeout | confirm | confirm | full-timeout | 1 - 0 - 1 - 0 - 1/2 - 1 |
- * | 6 | mei | ivan | confirm | none-timeout | full-timeout | confirm | 0 - 1 - 1 - 1 |
+ * | P1 | P2 | pick-p1 | pick-p2 | ban-p1 | ban-p2 | series result (p1) |
+ * |----|----|----|---------|---------|--------|--------|-------------------|
+ * | elena | hans | confirm | confirm | confirm | confirm | 0 - 1/2 - 1 - 1 |
+ * | yulia | luis | confirm | full-timeout | confirm | none-timeout | 1 - 1 - 1 |
+ * | ana | lola | full-timeout | confirm | none-timeout | confirm | 0 - 1 - 0 - 1 - 1/2 - 1 |
+ * | carlos | nina | partial-timeout | confirm | confirm | partial-timeout | 0 - 0 - 1 - 1 - 1 |
+ * | oscar | petra | confirm | partial-timeout | partial-timeout | confirm | 1 - 1/2 - 1 |
+ * | boris | david | none-timeout | confirm | confirm | full-timeout | 1 - 0 - 1 - 0 - 1/2 - 1 |
+ * | mei | ivan | confirm | none-timeout | full-timeout | confirm | 0 - 1 - 1 - 1 |
  *
  * Pick/Ban Behaviors:
  * - confirm: Select required amount and confirm button
@@ -71,17 +71,17 @@ function calculateTimeout(
 
 // Generate tests from scenario matrix
 for (const scenario of testScenarios) {
-  const { id, player1: p1User, player2: p2User, pick, ban, seriesResult, description } = scenario;
+  const { player1: p1User, player2: p2User, pick, ban, seriesResult, description } = scenario;
   const pairUsers = [p1User.username, p2User.username];
 
   const timeout = calculateTimeout(seriesResult, pick, ban);
 
-  test.describe(`Test ${id}: ${p1User.username} vs ${p2User.username}`, () => {
+  test.describe(`${p1User.username} vs ${p2User.username}: ${description}`, () => {
     test.describe.configure({ timeout });
 
     test.beforeAll(() => cleanupPairData(pairUsers));
 
-    test(`[Test ${id}] ${description}`, async ({ browser }) => {
+    test(description, async ({ browser }) => {
       const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
         browser,
         p1User,

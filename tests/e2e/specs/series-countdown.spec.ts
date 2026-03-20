@@ -26,12 +26,11 @@ import { verifyOpeningsTab } from '../helpers/openings-tab';
  * Tests the 3-second countdown timer that appears after both players confirm
  * in pick/ban phases, and when the selecting player confirms.
  *
- * Test 1 (mary vs jose): Countdown appears and decrements in pick/ban phases
- * Test 2 (iryna vs pedro): Countdown cancel + re-confirm behavior
+ * mary vs jose: Countdown appears and decrements in pick/ban phases
+ * iryna vs pedro: Countdown cancel + re-confirm behavior
  */
 
-// ===== Test 1: Countdown appears and decrements =====
-test.describe('Test 1: Countdown appears in pick/ban phases (mary vs jose)', () => {
+test.describe('mary vs jose: Countdown appears in pick/ban phases', () => {
   test.describe.configure({ timeout: 90000 });
 
   const pairUsers = ['mary', 'jose'];
@@ -166,8 +165,7 @@ test.describe('Test 1: Countdown appears in pick/ban phases (mary vs jose)', () 
   });
 });
 
-// ===== Test 2: Countdown cancel behavior =====
-test.describe('Test 2: Countdown cancel + re-confirm (iryna vs pedro)', () => {
+test.describe('iryna vs pedro: Countdown cancel + re-confirm', () => {
   test.describe.configure({ timeout: 90000 });
 
   const pairUsers = ['iryna', 'pedro'];

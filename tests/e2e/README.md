@@ -27,19 +27,21 @@ tests/e2e/
 │   ├── scenarios.ts       # 테스트 시나리오 매트릭스 (PickBanBehavior, testScenarios)
 │   └── series.ts          # 시리즈 조작 헬퍼 (selectOpenings, confirm 등)
 └── specs/
-    ├── opening-pool.spec.ts           # Opening Pool 페이지 테스트 (Test 20)
-    ├── series-banpick.spec.ts         # 밴픽 플로우 테스트 (Test 0~6)
-    ├── series-countdown.spec.ts       # Countdown 테스트 (Test 12~13)
-    ├── series-disconnect.spec.ts      # Disconnect/Abort 테스트 (Test 7~8, 14~15)
-    ├── series-forfeit.spec.ts         # Series Forfeit 테스트 (Test 9~10)
-    ├── series-finished.spec.ts        # Finished Page + Rematch 테스트 (Test 11)
-    ├── series-pool-exhaustion.spec.ts # Pool Exhaustion → Draw 테스트 (Test 17)
-    ├── series-resting.spec.ts         # Resting Phase 테스트 (Test 18~19)
-    ├── series-nostart.spec.ts         # NoStart 테스트 (Test 20~21)
-    ├── opening-pool-customize.spec.ts # Opening Pool 커스터마이즈 테스트 (Test 22)
-    ├── series-reconnect-banner.spec.ts # Reconnection 배너 테스트 (Test 26)
-    ├── series-lobby.spec.ts           # Lobby 매칭 테스트 (Test 27)
-    └── series-ai.spec.ts             # AI Opening Duel 테스트 (Test 28)
+    ├── series-banpick.spec.ts         # 밴픽 플로우 (7 시나리오)
+    ├── series-countdown.spec.ts       # Countdown 표시/취소
+    ├── series-disconnect.spec.ts      # Disconnect/Abort (Pick, Ban, Game, Resting, Selecting)
+    ├── series-forfeit.spec.ts         # Series Forfeit
+    ├── series-finished.spec.ts        # Finished Page + Rematch
+    ├── series-finished-mobile.spec.ts # Finished Page 모바일 스크롤
+    ├── series-resting.spec.ts         # Resting Phase (confirm, timeout)
+    ├── series-nostart.spec.ts         # NoStart (미착수 패배)
+    ├── series-pool-exhaustion.spec.ts # Pool Exhaustion → Draw
+    ├── series-reconnect-banner.spec.ts # Reconnection 배너
+    ├── series-lobby.spec.ts           # Lobby 매칭
+    ├── series-ai.spec.ts              # AI Opening Duel
+    ├── series-color-mismatch.spec.ts  # Opening Color Mismatch 버그
+    ├── opening-pool.spec.ts           # Opening Pool 페이지
+    └── opening-pool-customize.spec.ts # Opening Pool 커스터마이즈
 ```
 
 ## 테스트 계정 생성
@@ -83,31 +85,40 @@ const users = [
 
 각 테스트는 고유한 계정 쌍을 사용하며, pick/ban 행동과 시리즈 결과를 정의함.
 
-| # | P1 | P2 | pick | ban | series result | games | score | 특징 |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---|
-| 0 | elena | hans | ✅/✅ | ✅/✅ | 0 - ½ - 1 - 1 | 4 | 2.5-1.5 | 역전승 |
-| 1 | yulia | luis | ✅/⏰ | ✅/🚫 | 1 - 1 - 1 | 3 | 3-0 | 3연승 |
-| 2 | ana | lola | ⏰/✅ | 🚫/✅ | 0 - 1 - 0 - 1 - ½ - 1 | 6 | 3.5-2.5 | 서든데스 |
-| 3 | carlos | nina | ⚠️/✅ | ✅/⚠️ | 0 - 0 - 1 - 1 - 1 | 5 | 3-2 | 0-2 역전 |
-| 4 | oscar | petra | ✅/⚠️ | ⚠️/✅ | 1 - ½ - 1 | 3 | 2.5-0.5 | 조기승리 |
-| 5 | boris | david | 🚫/✅ | ✅/⏰ | 1 - 0 - 1 - 0 - ½ - 1 | 6 | 3.5-2.5 | 서든데스 |
-| 6 | mei | ivan | ✅/🚫 | ⏰/✅ | 0 - 1 - 1 - 1 | 4 | 3-1 | 4경기 |
-| 7 | angel | bobby | ✅/🔌 | - | - | - | abort | Pick disconnect |
-| 8 | marcel | vera | ✅/✅ | ✅/🔌 | - | - | abort | Ban disconnect |
-| 9 | fatima | diego | ✅/✅ | ✅/✅ | forfeit(moves) | 1 | forfeit | P1 forfeit after moves |
-| 10 | salma | benjamin | ✅/✅ | ✅/✅ | forfeit(no moves) | 1 | forfeit | P1 forfeit before moves |
-| 11 | patricia | adriana | ✅/✅ | ✅/✅ | 1 - 1 - 1 | 3 | 3-0 | Finished page + rematch |
-| 12 | mary | jose | ✅/✅ | ✅/✅ | - | 1 | - | Countdown 표시 + 감소 |
-| 13 | iryna | pedro | ✅/✅ | ✅/✅ | - | 1 | - | Countdown cancel + 재시작 |
-| 14 | aaron | jacob | ✅/✅ | ✅/✅ | disconnect(game) | 1 | 1-0 | 게임 중 disconnect → game loss, series continues |
-| 15 | svetlana | qing | ✅/✅ | ✅/✅ | 0 - 0 + disconnect | 3 | 1-2 | 0-2 후 game 3 disconnect → game loss, series continues |
-| 17 | dmitry | milena | ✅/✅ | ✅/✅ | ½ - ½ - ½ - ½ - ½ - ½ | 6 | 3-3 draw | 풀 소진 → 시리즈 Draw |
-| 18 | yaroslava | ekaterina | ✅/✅ | ✅/✅ | P2 resign + resting | 2 | - | Resting: confirm→cancel→re-confirm→countdown |
-| 19 | margarita | yevgeny | ✅/✅ | ✅/✅ | P1 resign + resting | 2 | - | Resting: confirm→cancel→30s timeout |
-| 20 | elena | - | - | - | - | - | - | Opening Pool 페이지 접근 + 렌더링 확인 |
-| 21 | kwame | sonia | ✅/✅ | ✅/✅ | 1 + selecting timeout | 2 | - | Selecting timeout → 랜덤 선택, game 2 시작 |
-| 22 | tomoko | renata | ✅/✅ | ✅/✅ | 0 + resting both DC | 1 | abort | Resting 양측 DC → 시리즈 abort |
-| 27 | elizabeth | dae | ✅/✅ | ✅/✅ | 0 (1 game only) | 1 | active | Lobby hook 매칭 → 시리즈 생성 |
+| Spec 파일 | P1 | P2 | pick | ban | series result | games | score | 시나리오 |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---|
+| banpick | elena | hans | ✅/✅ | ✅/✅ | 0 - ½ - 1 - 1 | 4 | 2.5-1.5 | 역전승 |
+| banpick | yulia | luis | ✅/⏰ | ✅/🚫 | 1 - 1 - 1 | 3 | 3-0 | 3연승 |
+| banpick | ana | lola | ⏰/✅ | 🚫/✅ | 0 - 1 - 0 - 1 - ½ - 1 | 6 | 3.5-2.5 | 서든데스 |
+| banpick | carlos | nina | ⚠️/✅ | ✅/⚠️ | 0 - 0 - 1 - 1 - 1 | 5 | 3-2 | 0-2 역전 |
+| banpick | oscar | petra | ✅/⚠️ | ⚠️/✅ | 1 - ½ - 1 | 3 | 2.5-0.5 | 조기승리 |
+| banpick | boris | david | 🚫/✅ | ✅/⏰ | 1 - 0 - 1 - 0 - ½ - 1 | 6 | 3.5-2.5 | 서든데스 |
+| banpick | mei | ivan | ✅/🚫 | ⏰/✅ | 0 - 1 - 1 - 1 | 4 | 3-1 | 4경기 |
+| disconnect | angel | bobby | ✅/🔌 | - | - | - | abort | Pick disconnect |
+| disconnect | marcel | vera | ✅/✅ | ✅/🔌 | - | - | abort | Ban disconnect |
+| forfeit | fatima | diego | ✅/✅ | ✅/✅ | forfeit(moves) | 1 | forfeit | P1 forfeit after moves |
+| forfeit | salma | benjamin | ✅/✅ | ✅/✅ | forfeit(no moves) | 1 | forfeit | P1 forfeit before moves |
+| finished | patricia | adriana | ✅/✅ | ✅/✅ | 1 - 1 - 1 | 3 | 3-0 | Finished page + rematch |
+| countdown | mary | jose | ✅/✅ | ✅/✅ | - | 1 | - | Countdown 표시 + 감소 |
+| countdown | iryna | pedro | ✅/✅ | ✅/✅ | - | 1 | - | Countdown cancel + 재시작 |
+| disconnect | aaron | jacob | ✅/✅ | ✅/✅ | disconnect(game) | 1 | 1-0 | Game DC → game loss |
+| disconnect | svetlana | qing | ✅/✅ | ✅/✅ | 0 - 0 + disconnect | 3 | 1-2 | Game 3 DC after 0-2 |
+| pool-exhaustion | dmitry | milena | ✅/✅ | ✅/✅ | ½ - ½ - ½ - ½ - ½ - ½ | 6 | 3-3 draw | 풀 소진 → 시리즈 Draw |
+| resting | yaroslava | ekaterina | ✅/✅ | ✅/✅ | P2 resign + resting | 2 | - | Resting: confirm→cancel→re-confirm→countdown |
+| resting | margarita | yevgeny | ✅/✅ | ✅/✅ | P1 resign + resting | 2 | - | Resting: confirm→cancel→30s timeout |
+| disconnect | kwame | sonia | ✅/✅ | ✅/✅ | 1 + selecting timeout | 2 | - | Selecting timeout → 랜덤 선택 |
+| disconnect | tomoko | renata | ✅/✅ | ✅/✅ | 0 + resting both DC | 1 | abort | Resting 양측 DC → abort |
+| disconnect | yarah | suresh | ✅/✅ | ✅/✅ | 0 + resting 1 DC | 1 | forfeit | Resting 1 DC → forfeit |
+| nostart | yunel | idris | ✅/✅ | ✅/✅ | nostart | 1 | - | NoStart: 양측 미착수 |
+| nostart | aleksandr | veer | ✅/✅ | ✅/✅ | nostart | 1 | - | NoStart: 후수 미착수 |
+| nostart | aleksandr | veer | ✅/✅ | ✅/✅ | nostart | 1 | - | NoStart: 타이머 지연 |
+| reconnect-banner | frances | emmanuel | ✅/✅ | - | - | - | - | Reconnection 배너 표시 |
+| lobby | elizabeth | dae | ✅/✅ | ✅/✅ | 0 (1 game only) | 1 | active | Lobby hook 매칭 → 시리즈 생성 |
+| ai | mateo | - | - | - | - | 1 | forfeit | AI vs Stockfish |
+| pool | elena | - | - | - | - | - | - | Opening Pool 페이지 렌더링 |
+| pool-customize | ramesh | nushi | ✅/✅ | ✅/✅ | - | 1 | - | 커스텀 pool → Pick Phase |
+| color-mismatch | akeem | rudra | ✅/✅ | ✅/✅ | - | 1 | - | Opening color mismatch 버그 |
+| finished-mobile | gabriela | guang | ✅/✅ | ✅/✅ | 1 - 1 - 1 | 3 | 3-0 | Finished 모바일 스크롤 |
 
 ## Pick/Ban 행동 타입
 
@@ -123,11 +134,11 @@ const users = [
 
 | 행동 | pick-p1 | pick-p2 | ban-p1 | ban-p2 |
 |:---:|:---:|:---:|:---:|:---:|
-| confirm | 0,1,4,6 | 0,2,3,5 | 0,1,3,5 | 0,2,4,6 |
-| full-timeout | 2 | 1 | 6 | 5 |
-| partial-timeout | 3 | 4 | 4 | 3 |
-| none-timeout | 5 | 6 | 2 | 1 |
-| disconnected | - | 7 | - | 8 |
+| confirm | elena,yulia,oscar,mei | elena,ana,carlos,boris | elena,yulia,carlos,boris | elena,ana,oscar,mei |
+| full-timeout | ana | yulia | mei | boris |
+| partial-timeout | carlos | oscar | oscar | carlos |
+| none-timeout | boris | mei | ana | yulia |
+| disconnected | - | angel | - | marcel |
 
 → 16개 조합 (4 행동 × 4 위치) 모두 커버됨 + disconnect 2개
 
@@ -144,19 +155,22 @@ P1 관점에서 각 게임 결과를 `-`로 구분:
 
 **1. 테스트 이름 형식:**
 ```typescript
-test('[Test 0] 역전승 4게임', async ({ browser }) => {...});
+// describe: "유저 vs 유저: 시나리오"
+// test: 서술적 시나리오 설명
+test.describe('elena vs hans: 역전승 4게임', () => {
+  test('역전승 4게임', async ({ browser }) => {...});
+});
 ```
 
 **2. 테스트 구조:**
 ```typescript
-test.describe('Test 0: elena vs hans', () => {
+test.describe('elena vs hans: 역전승 4게임', () => {
   test.describe.configure({ timeout: 120000 });
-  const pair = testPairs[0];  // 또는 testPairs.test0
   const pairUsers = ['elena', 'hans'];
 
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 0] 역전승 4게임', async ({ browser }) => {
+  test('역전승 4게임', async ({ browser }) => {
     // 1. 시리즈 생성 + 밴픽 완료
     await completeBanPickPhase(player1, player2, {
       pick: { p1: 'confirm', p2: 'confirm' },
@@ -177,7 +191,7 @@ test.describe('Test 0: elena vs hans', () => {
 ```
 
 **3. 새 테스트 추가 시:**
-1. 매트릭스에 새 행 추가 (# 증가)
+1. 매트릭스에 새 행 추가 (spec 파일명 + 시나리오 설명)
 2. 새 계정 쌍 추가 (uids.txt, global-setup.ts, auth.ts)
 3. 기존 테스트와 중복되지 않는 pick/ban 조합 선택
 4. series result로 테스트할 시나리오 정의
@@ -208,7 +222,7 @@ test.describe('Test 0: elena vs hans', () => {
 - 테스트 실행 시 항상 HTML 리포트 사용 (`npm test` 후 `npm run report`)
 - 테스트 실패 시 리포트 확인을 유저에게 안내
 - 새 시나리오 추가 시 매트릭스 기반으로 설계
-- 테스트 이름은 `[Test #] 설명` 형식 유지
+- 테스트 이름은 서술적으로 작성 (번호 사용 금지)
 
 ## 실전 팁
 
@@ -220,33 +234,39 @@ test.describe('Test 0: elena vs hans', () => {
 
 ## 테스트 계정 쌍 목록
 
-| Pair | P1 | P2 | 용도 | Spec 파일 |
-|:---:|:---:|:---:|:---|:---|
-| 1 | elena | hans | 밴픽 Test 0 | series-banpick |
-| 2 | boris | david | 밴픽 Test 5 | series-banpick |
-| 3 | yulia | luis | 밴픽 Test 1 | series-banpick |
-| 4 | mei | ivan | 밴픽 Test 6 | series-banpick |
-| 5 | ana | lola | 밴픽 Test 2 | series-banpick |
-| 6 | carlos | nina | 밴픽 Test 3 | series-banpick |
-| 7 | oscar | petra | 밴픽 Test 4 | series-banpick |
-| 8 | angel | bobby | Disconnect Test 7 | series-disconnect |
-| 9 | marcel | vera | Disconnect Test 8 | series-disconnect |
-| 10 | fatima | diego | Forfeit Test 9 | series-forfeit |
-| 11 | salma | benjamin | Forfeit Test 10 | series-forfeit |
-| 12 | patricia | adriana | Finished + Rematch Test 11 | series-finished |
-| 13 | mary | jose | Countdown Test 12 | series-countdown |
-| 14 | iryna | pedro | Countdown Test 13 | series-countdown |
-| 15 | aaron | jacob | Game Disconnect Test 14 | series-disconnect |
-| 16 | svetlana | qing | Game Disconnect Test 15 | series-disconnect |
-| 17 | dmitry | milena | Pool Exhaustion Test 17 | series-pool-exhaustion |
-| 18 | yaroslava | ekaterina | Resting confirm Test 18 | series-resting |
-| 19 | margarita | yevgeny | Resting timeout Test 19 | series-resting |
-| 23 | kwame | sonia | Selecting timeout Test 21 | series-disconnect |
-| 24 | tomoko | renata | Resting both DC Test 22 | series-disconnect |
-| 25 | yarah | suresh | Resting 1 DC Test 25 | series-disconnect |
-| 26 | frances | emmanuel | Reconnect banner Test 26 | series-reconnect-banner |
-| 27 | elizabeth | dae | Lobby matching Test 27 | series-lobby |
-| Solo | mateo | - | AI Opening Duel Test 28 | series-ai |
+| P1 | P2 | 시나리오 | Spec 파일 |
+|:---:|:---:|:---|:---|
+| elena | hans | 밴픽 역전승 | series-banpick |
+| boris | david | 밴픽 서든데스 P1 선행 | series-banpick |
+| yulia | luis | 밴픽 3연승 | series-banpick |
+| mei | ivan | 밴픽 4경기 | series-banpick |
+| ana | lola | 밴픽 서든데스 P2 선행 | series-banpick |
+| carlos | nina | 밴픽 0-2 역전 | series-banpick |
+| oscar | petra | 밴픽 조기승리 | series-banpick |
+| angel | bobby | Pick disconnect → abort | series-disconnect |
+| marcel | vera | Ban disconnect → abort | series-disconnect |
+| fatima | diego | Forfeit after moves | series-forfeit |
+| salma | benjamin | Forfeit before moves | series-forfeit |
+| patricia | adriana | Finished page + rematch | series-finished |
+| mary | jose | Countdown 표시 + 감소 | series-countdown |
+| iryna | pedro | Countdown cancel + 재시작 | series-countdown |
+| aaron | jacob | Game DC → game loss | series-disconnect |
+| svetlana | qing | Game 3 DC after 0-2 | series-disconnect |
+| dmitry | milena | Pool exhaustion → Draw | series-pool-exhaustion |
+| yaroslava | ekaterina | Resting confirm | series-resting |
+| margarita | yevgeny | Resting timeout | series-resting |
+| yunel | idris | NoStart neither moves | series-nostart |
+| aleksandr | veer | NoStart second mover / timer | series-nostart |
+| ramesh | nushi | Pool customize → Pick Phase | opening-pool-customize |
+| kwame | sonia | Selecting timeout → random | series-disconnect |
+| tomoko | renata | Resting both DC → abort | series-disconnect |
+| yarah | suresh | Resting 1 DC → forfeit | series-disconnect |
+| frances | emmanuel | Reconnection banner | series-reconnect-banner |
+| elizabeth | dae | Lobby hook matching | series-lobby |
+| mateo | - | AI vs Stockfish | series-ai |
+| akeem | rudra | Opening color mismatch | series-color-mismatch |
+| gabriela | guang | Finished mobile scroll | series-finished-mobile |
+| elena | - | Opening Pool 페이지 | opening-pool |
 
 > **중요**: 각 쌍은 하나의 테스트에서만 사용 (병렬 충돌 방지)
 

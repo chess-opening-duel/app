@@ -26,20 +26,19 @@ import {
  * - Both players click "Next Game" → 3s countdown → transition to next phase
  * - 30s timeout → auto-transition without any clicks
  *
- * | # | P1 | P2 | Scenario |
- * |---|----|----|----------|
- * | 18 | yaroslava | ekaterina | Both confirm Next Game → fast transition (2 games) |
- * | 19 | margarita | yevgeny | Resting timeout → auto-transition (1 game + timeout) |
+ * | P1 | P2 | Scenario |
+ * |----|----|----|
+ * | yaroslava | ekaterina | Both confirm Next Game → fast transition (2 games) |
+ * | margarita | yevgeny | Resting timeout → auto-transition (1 game + timeout) |
  */
 
-// ===== Test 18: Both confirm Next Game quickly =====
-test.describe('Test 18: yaroslava vs ekaterina (Resting: both confirm)', () => {
+test.describe('yaroslava vs ekaterina: Resting both confirm', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['yaroslava', 'ekaterina'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 18] Resting UI appears after game → both confirm → next game starts', async ({ browser }) => {
+  test('Resting UI appears after game → both confirm → next game starts', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.yaroslava,
@@ -70,7 +69,7 @@ test.describe('Test 18: yaroslava vs ekaterina (Resting: both confirm)', () => {
       let game1Id = '';
       await test.step('Play game 1 (P2 resigns)', async () => {
         game1Id = await playOneGame(player1, player2, 'yaroslava', 'ekaterina', 'p2-resign');
-        console.log(`[Test 18] Game 1 finished: ${game1Id}`);
+        console.log(`[Resting Confirm] Game 1 finished: ${game1Id}`);
         await takeScreenshot('game1-result-p1', player1);
         await takeScreenshot('game1-result-p2', player2);
       });
@@ -88,7 +87,7 @@ test.describe('Test 18: yaroslava vs ekaterina (Resting: both confirm)', () => {
         const timeLeft = await getRestingTimeLeft(player1);
         expect(timeLeft).toBeGreaterThan(0);
         expect(timeLeft).toBeLessThanOrEqual(30);
-        console.log(`[Test 18] Resting timer: ${timeLeft}s`);
+        console.log(`[Resting Confirm] Resting timer: ${timeLeft}s`);
 
         // Verify "Next Game" button is visible
         await expect(player1.locator(selectors.restingConfirmBtn)).toBeVisible();
@@ -158,7 +157,7 @@ test.describe('Test 18: yaroslava vs ekaterina (Resting: both confirm)', () => {
 
         await takeScreenshot('game2-started-p1', player1);
         await takeScreenshot('game2-started-p2', player2);
-        console.log(`[Test 18] Game 2 started successfully`);
+        console.log(`[Resting Confirm] Game 2 started successfully`);
       });
     } finally {
       await player1Context.close();
@@ -167,15 +166,14 @@ test.describe('Test 18: yaroslava vs ekaterina (Resting: both confirm)', () => {
   });
 });
 
-// ===== Test 19: Resting timeout (no confirm) =====
-test.describe('Test 19: margarita vs yevgeny (Resting: timeout auto-transition)', () => {
+test.describe('margarita vs yevgeny: Resting timeout auto-transition', () => {
   // 30s resting timeout + phase transition + game start + buffer
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['margarita', 'yevgeny'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('[Test 19] No one clicks Next Game → 30s timeout → auto-transition', async ({ browser }) => {
+  test('No one clicks Next Game → 30s timeout → auto-transition', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.margarita,
@@ -206,7 +204,7 @@ test.describe('Test 19: margarita vs yevgeny (Resting: timeout auto-transition)'
       let game1Id = '';
       await test.step('Play game 1 (P1 resigns)', async () => {
         game1Id = await playOneGame(player1, player2, 'margarita', 'yevgeny', 'p1-resign');
-        console.log(`[Test 19] Game 1 finished: ${game1Id}`);
+        console.log(`[Resting Timeout] Game 1 finished: ${game1Id}`);
         await takeScreenshot('game1-result-p1', player1);
       });
 
@@ -216,7 +214,7 @@ test.describe('Test 19: margarita vs yevgeny (Resting: timeout auto-transition)'
         await waitForRestingUI(player2);
 
         const timeLeft = await getRestingTimeLeft(player1);
-        console.log(`[Test 19] Resting timer: ${timeLeft}s`);
+        console.log(`[Resting Timeout] Resting timer: ${timeLeft}s`);
         expect(timeLeft).toBeGreaterThan(0);
 
         await takeScreenshot('resting-ui-p1', player1);
@@ -246,7 +244,7 @@ test.describe('Test 19: margarita vs yevgeny (Resting: timeout auto-transition)'
 
       // Step 5: Wait for timeout (don't click anything) → auto-transition
       await test.step('Wait for 30s timeout → auto-transition to next game', async () => {
-        console.log('[Test 19] NOT clicking Next Game - waiting for 30s timeout...');
+        console.log('[Resting Timeout] NOT clicking Next Game - waiting for 30s timeout...');
 
         // Use skipResting=true so waitForNextGame doesn't click the button
         await waitForNextGame(player1, player2, null, game1Id, 50000, takeScreenshot, 2, true);
@@ -257,7 +255,7 @@ test.describe('Test 19: margarita vs yevgeny (Resting: timeout auto-transition)'
 
         await takeScreenshot('game2-auto-started-p1', player1);
         await takeScreenshot('game2-auto-started-p2', player2);
-        console.log(`[Test 19] Game 2 started via timeout auto-transition`);
+        console.log(`[Resting Timeout] Game 2 started via timeout auto-transition`);
       });
     } finally {
       await player1Context.close();
