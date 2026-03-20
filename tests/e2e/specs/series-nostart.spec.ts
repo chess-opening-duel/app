@@ -40,6 +40,7 @@ import {
  * |----|----|----|----------|
  * | yunel | idris | Neither player moves | First mover (startColor) loses, opponent +1pt |
  * | aleksandr | veer | First mover moves, second doesn't | Second mover loses, first mover +1pt |
+ * | monica | yun | 15s wait after animation, then Game 2 NoStart | NoStart timer delayed until animation done |
  */
 
 test.describe('yunel vs idris: NoStart - neither moves @phase:pick @phase:ban @phase:game @feature:nostart @scope:slow', () => {
@@ -288,18 +289,18 @@ test.describe('aleksandr vs veer: NoStart - second mover doesn\'t move @phase:pi
   });
 });
 
-test.describe('aleksandr vs veer: NoStart timer delayed until animation done @phase:pick @phase:ban @phase:game @feature:nostart @scope:slow', () => {
+test.describe('monica vs yun: NoStart timer delayed until animation done @phase:pick @phase:ban @phase:game @feature:nostart @scope:slow', () => {
   // 15s wait + Resting 30s + Selecting 30s + NoStart 26s + buffer
   test.describe.configure({ timeout: 240000 });
 
-  const pairUsers = ['aleksandr', 'veer'];
+  const pairUsers = ['monica', 'yun'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
   test('15s wait after animation → no NoStart, then Game 2 NoStart fires', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
-      users.aleksandr,
-      users.veer
+      users.monica,
+      users.yun
     );
 
     let screenshotCounter = 0;
@@ -317,8 +318,8 @@ test.describe('aleksandr vs veer: NoStart timer delayed until animation done @ph
     try {
       // Step 1: Create series
       await test.step('Create series', async () => {
-        await loginBothPlayers(player1, player2, users.aleksandr, users.veer);
-        seriesId = await createSeriesChallenge(player1, player2, 'veer');
+        await loginBothPlayers(player1, player2, users.monica, users.yun);
+        seriesId = await createSeriesChallenge(player1, player2, 'yun');
       });
 
       // Step 2: Complete ban/pick phase
@@ -342,7 +343,7 @@ test.describe('aleksandr vs veer: NoStart timer delayed until animation done @ph
         await takeScreenshot('game1-after-15s-wait', player1);
 
         // Both make their first move — proves neither was NoStart'd
-        await playBothMoves(player1, player2, 'aleksandr', 'veer');
+        await playBothMoves(player1, player2, 'monica', 'yun');
         console.log('[NoStart Timer] Both players moved after 15s wait — NoStart did NOT fire');
         await takeScreenshot('game1-both-moved', player1);
       });
@@ -352,7 +353,7 @@ test.describe('aleksandr vs veer: NoStart timer delayed until animation done @ph
       await test.step('Resign game 1 → transition to game 2', async () => {
         game1Id = getGameIdFromUrl(player1.url()) || '';
         await resignGame(player1);
-        console.log(`[NoStart Timer] Game 1 (${game1Id}) resigned by aleksandr`);
+        console.log(`[NoStart Timer] Game 1 (${game1Id}) resigned by monica`);
 
         // waitForNextGame handles: Resting → confirm → Selecting timeout → new game arrival
         await waitForNextGame(player1, player2, null, game1Id, 90000, takeScreenshot, 2);

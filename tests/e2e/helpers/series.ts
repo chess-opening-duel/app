@@ -519,7 +519,7 @@ export async function createSeriesChallenge(
     // The dropdown items have class "complete-result" and are <span> elements
     // See: repos/lila/ui/lib/src/view/userComplete.ts (renderUserEntry)
     // See: repos/lila/ui/bits/src/bits.challengePage.ts (tag: 'span')
-    const dropdownItem = player1.locator('.complete-result').filter({ hasText: new RegExp(player2Username, 'i') });
+    const dropdownItem = player1.locator('.complete-result').filter({ hasText: new RegExp(`^${player2Username}$`, 'i') });
     await expect(dropdownItem.first()).toBeVisible({ timeout: 3000 });
     await dropdownItem.first().click();
 

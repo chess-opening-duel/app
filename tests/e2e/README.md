@@ -271,7 +271,8 @@ npx playwright test --grep-invert @scope:slow    # 느린 테스트 제외
 | yaroslava | ekaterina | Resting confirm | series-resting |
 | margarita | yevgeny | Resting timeout | series-resting |
 | yunel | idris | NoStart neither moves | series-nostart |
-| aleksandr | veer | NoStart second mover / timer | series-nostart |
+| aleksandr | veer | NoStart second mover | series-nostart |
+| monica | yun | NoStart timer delayed | series-nostart |
 | ramesh | nushi | Pool customize → Pick Phase | opening-pool-customize |
 | kwame | sonia | Selecting timeout → random | series-disconnect |
 | tomoko | renata | Resting both DC → abort | series-disconnect |

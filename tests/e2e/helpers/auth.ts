@@ -96,6 +96,9 @@ export const users = {
   // Opening color mismatch bug (same opening, different colors)
   akeem: { username: 'akeem', password: 'password', storageState: '.auth/akeem.json' },
   rudra: { username: 'rudra', password: 'password', storageState: '.auth/rudra.json' },
+  // NoStart timer delayed (separate pair from NoStart second mover)
+  monica: { username: 'monica', password: 'password', storageState: '.auth/monica.json' },
+  yun: { username: 'yun', password: 'password', storageState: '.auth/yun.json' },
   // AI Opening Duel (vs Stockfish)
   mateo: { username: 'mateo', password: 'password', storageState: '.auth/mateo.json' },
 } as const;
