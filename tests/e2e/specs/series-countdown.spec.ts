@@ -30,7 +30,7 @@ import { verifyOpeningsTab } from '../helpers/openings-tab';
  * iryna vs pedro: Countdown cancel + re-confirm behavior
  */
 
-test.describe('mary vs jose: Countdown appears in pick/ban phases', () => {
+test.describe('mary vs jose: Countdown appears in pick/ban phases @phase:pick @phase:ban @feature:countdown @scope:quick', () => {
   test.describe.configure({ timeout: 90000 });
 
   const pairUsers = ['mary', 'jose'];
@@ -165,7 +165,7 @@ test.describe('mary vs jose: Countdown appears in pick/ban phases', () => {
   });
 });
 
-test.describe('iryna vs pedro: Countdown cancel + re-confirm', () => {
+test.describe('iryna vs pedro: Countdown cancel + re-confirm @phase:pick @phase:ban @feature:countdown @scope:quick', () => {
   test.describe.configure({ timeout: 90000 });
 
   const pairUsers = ['iryna', 'pedro'];

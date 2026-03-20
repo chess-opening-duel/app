@@ -31,7 +31,7 @@ import {
  * | patricia | adriana | 3-0 sweep → finished page + rematch flow |
  */
 
-test.describe('patricia vs adriana: Finished page + Rematch', () => {
+test.describe('patricia vs adriana: Finished page + Rematch @phase:pick @phase:ban @phase:game @phase:resting @feature:rematch @scope:slow', () => {
   // 3-game sweep (fast) + rematch flow
   test.describe.configure({ timeout: 120000 });
 

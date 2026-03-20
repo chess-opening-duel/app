@@ -76,7 +76,7 @@ for (const scenario of testScenarios) {
 
   const timeout = calculateTimeout(seriesResult, pick, ban);
 
-  test.describe(`${p1User.username} vs ${p2User.username}: ${description}`, () => {
+  test.describe(`${p1User.username} vs ${p2User.username}: ${description} @phase:pick @phase:ban @phase:game @phase:resting @phase:selecting @scope:slow`, () => {
     test.describe.configure({ timeout });
 
     test.beforeAll(() => cleanupPairData(pairUsers));

@@ -32,7 +32,7 @@ import {
  * | margarita | yevgeny | Resting timeout → auto-transition (1 game + timeout) |
  */
 
-test.describe('yaroslava vs ekaterina: Resting both confirm', () => {
+test.describe('yaroslava vs ekaterina: Resting both confirm @phase:pick @phase:ban @phase:game @phase:resting @scope:slow', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['yaroslava', 'ekaterina'];
@@ -166,7 +166,7 @@ test.describe('yaroslava vs ekaterina: Resting both confirm', () => {
   });
 });
 
-test.describe('margarita vs yevgeny: Resting timeout auto-transition', () => {
+test.describe('margarita vs yevgeny: Resting timeout auto-transition @phase:pick @phase:ban @phase:game @phase:resting @scope:slow', () => {
   // 30s resting timeout + phase transition + game start + buffer
   test.describe.configure({ timeout: 120000 });
 

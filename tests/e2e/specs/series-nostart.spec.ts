@@ -42,7 +42,7 @@ import {
  * | aleksandr | veer | First mover moves, second doesn't | Second mover loses, first mover +1pt |
  */
 
-test.describe('yunel vs idris: NoStart - neither moves', () => {
+test.describe('yunel vs idris: NoStart - neither moves @phase:pick @phase:ban @phase:game @feature:nostart @scope:slow', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['yunel', 'idris'];
@@ -158,7 +158,7 @@ test.describe('yunel vs idris: NoStart - neither moves', () => {
   });
 });
 
-test.describe('aleksandr vs veer: NoStart - second mover doesn\'t move', () => {
+test.describe('aleksandr vs veer: NoStart - second mover doesn\'t move @phase:pick @phase:ban @phase:game @feature:nostart @scope:slow', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['aleksandr', 'veer'];
@@ -288,7 +288,7 @@ test.describe('aleksandr vs veer: NoStart - second mover doesn\'t move', () => {
   });
 });
 
-test.describe('aleksandr vs veer: NoStart timer delayed until animation done', () => {
+test.describe('aleksandr vs veer: NoStart timer delayed until animation done @phase:pick @phase:ban @phase:game @feature:nostart @scope:slow', () => {
   // 15s wait + Resting 30s + Selecting 30s + NoStart 26s + buffer
   test.describe.configure({ timeout: 240000 });
 

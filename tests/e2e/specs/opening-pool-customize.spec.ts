@@ -71,7 +71,7 @@ function makeScreenshot(testInfo: typeof test) {
   };
 }
 
-test.describe('Pool Customize → Pick Phase Verification', () => {
+test.describe('Pool Customize → Pick Phase Verification @phase:pick @phase:ban @feature:pool @scope:quick', () => {
   test.beforeAll(() => {
     cleanupPairData(pairUsers);
   });

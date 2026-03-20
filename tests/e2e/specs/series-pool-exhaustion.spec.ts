@@ -26,7 +26,7 @@ import {
  * | dmitry | milena | 6 draws → pool exhaustion → series Draw |
  */
 
-test.describe('dmitry vs milena: Pool exhaustion → series Draw', () => {
+test.describe('dmitry vs milena: Pool exhaustion → series Draw @phase:pick @phase:ban @phase:game @phase:resting @feature:pool @scope:slow', () => {
   // 6 games (draws) + ban/pick phase + resting phases + RandomSelecting (~13s each: roulette + showcase) + buffer
   test.describe.configure({ timeout: 300000 });
 

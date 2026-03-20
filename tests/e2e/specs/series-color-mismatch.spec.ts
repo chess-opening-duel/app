@@ -120,7 +120,7 @@ function makeScreenshot(testInfo: typeof test) {
   };
 }
 
-test.describe('Opening Color Mismatch Bug (#101)', () => {
+test.describe('Opening Color Mismatch Bug (#101) @phase:pick @phase:ban @phase:game @feature:pool @scope:quick', () => {
   test.beforeAll(() => {
     cleanupPairData(pairUsers);
   });

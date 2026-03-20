@@ -3,7 +3,7 @@ import { users } from '../helpers/auth';
 
 const user = users.elena;
 
-test.describe('Opening Pool Page', () => {
+test.describe('Opening Pool Page @feature:pool @scope:quick', () => {
   test('Opening Pool 페이지 접근 및 렌더링 확인', async ({ browser }) => {
     const context = await browser.newContext({ storageState: user.storageState });
     const page = await context.newPage();
@@ -57,7 +57,7 @@ test.describe('Opening Pool Page', () => {
   });
 });
 
-test.describe('Opening Pool Table on all opening pages', () => {
+test.describe('Opening Pool Table on all opening pages @feature:pool @scope:quick', () => {
   test('로그인 시 모든 opening 페이지에 pool 테이블 표시', async ({ browser }) => {
     const context = await browser.newContext({ storageState: user.storageState });
     const page = await context.newPage();

@@ -31,7 +31,7 @@ import { verifyOpeningsTab } from '../helpers/openings-tab';
  * | salma | benjamin | Forfeit before moves | Game abort, series finished, P2 wins |
  */
 
-test.describe('fatima vs diego: Forfeit after moves', () => {
+test.describe('fatima vs diego: Forfeit after moves @phase:pick @phase:ban @phase:game @feature:forfeit @scope:quick', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['fatima', 'diego'];
@@ -167,7 +167,7 @@ test.describe('fatima vs diego: Forfeit after moves', () => {
   });
 });
 
-test.describe('salma vs benjamin: Forfeit before moves', () => {
+test.describe('salma vs benjamin: Forfeit before moves @phase:pick @phase:ban @phase:game @feature:forfeit @scope:quick', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['salma', 'benjamin'];

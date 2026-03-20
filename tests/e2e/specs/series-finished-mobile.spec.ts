@@ -27,7 +27,7 @@ import {
 
 const MOBILE_VIEWPORT = { width: 320, height: 568 };
 
-test.describe('gabriela vs guang: Finished page mobile scroll', () => {
+test.describe('gabriela vs guang: Finished page mobile scroll @phase:pick @phase:ban @phase:game @feature:mobile @scope:slow', () => {
   test.describe.configure({ timeout: 120000 });
 
   const pairUsers = ['gabriela', 'guang'];

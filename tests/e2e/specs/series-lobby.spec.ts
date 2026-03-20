@@ -23,7 +23,7 @@ import {
  * | elizabeth | dae | Lobby hook matching → series → ban/pick → game |
  */
 
-test.describe('elizabeth vs dae: Lobby matching', () => {
+test.describe('elizabeth vs dae: Lobby matching @phase:pick @phase:ban @phase:game @feature:lobby @scope:quick', () => {
   test.describe.configure({ timeout: 180000 });
 
   const pairUsers = ['elizabeth', 'dae'];

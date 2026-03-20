@@ -27,7 +27,7 @@ tests/e2e/
 │   ├── scenarios.ts       # 테스트 시나리오 매트릭스 (PickBanBehavior, testScenarios)
 │   └── series.ts          # 시리즈 조작 헬퍼 (selectOpenings, confirm 등)
 └── specs/
-    ├── series-banpick.spec.ts         # 밴픽 플로우 (7 시나리오)
+    ├── series-scenarios.spec.ts       # 시리즈 시나리오 (7개: 역전, 서든데스 등)
     ├── series-countdown.spec.ts       # Countdown 표시/취소
     ├── series-disconnect.spec.ts      # Disconnect/Abort (Pick, Ban, Game, Resting, Selecting)
     ├── series-forfeit.spec.ts         # Series Forfeit
@@ -87,13 +87,13 @@ const users = [
 
 | Spec 파일 | P1 | P2 | pick | ban | series result | games | score | 시나리오 |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---|
-| banpick | elena | hans | ✅/✅ | ✅/✅ | 0 - ½ - 1 - 1 | 4 | 2.5-1.5 | 역전승 |
-| banpick | yulia | luis | ✅/⏰ | ✅/🚫 | 1 - 1 - 1 | 3 | 3-0 | 3연승 |
-| banpick | ana | lola | ⏰/✅ | 🚫/✅ | 0 - 1 - 0 - 1 - ½ - 1 | 6 | 3.5-2.5 | 서든데스 |
-| banpick | carlos | nina | ⚠️/✅ | ✅/⚠️ | 0 - 0 - 1 - 1 - 1 | 5 | 3-2 | 0-2 역전 |
-| banpick | oscar | petra | ✅/⚠️ | ⚠️/✅ | 1 - ½ - 1 | 3 | 2.5-0.5 | 조기승리 |
-| banpick | boris | david | 🚫/✅ | ✅/⏰ | 1 - 0 - 1 - 0 - ½ - 1 | 6 | 3.5-2.5 | 서든데스 |
-| banpick | mei | ivan | ✅/🚫 | ⏰/✅ | 0 - 1 - 1 - 1 | 4 | 3-1 | 4경기 |
+| scenarios | elena | hans | ✅/✅ | ✅/✅ | 0 - ½ - 1 - 1 | 4 | 2.5-1.5 | 역전승 |
+| scenarios | yulia | luis | ✅/⏰ | ✅/🚫 | 1 - 1 - 1 | 3 | 3-0 | 3연승 |
+| scenarios | ana | lola | ⏰/✅ | 🚫/✅ | 0 - 1 - 0 - 1 - ½ - 1 | 6 | 3.5-2.5 | 서든데스 |
+| scenarios | carlos | nina | ⚠️/✅ | ✅/⚠️ | 0 - 0 - 1 - 1 - 1 | 5 | 3-2 | 0-2 역전 |
+| scenarios | oscar | petra | ✅/⚠️ | ⚠️/✅ | 1 - ½ - 1 | 3 | 2.5-0.5 | 조기승리 |
+| scenarios | boris | david | 🚫/✅ | ✅/⏰ | 1 - 0 - 1 - 0 - ½ - 1 | 6 | 3.5-2.5 | 서든데스 |
+| scenarios | mei | ivan | ✅/🚫 | ⏰/✅ | 0 - 1 - 1 - 1 | 4 | 3-1 | 4경기 |
 | disconnect | angel | bobby | ✅/🔌 | - | - | - | abort | Pick disconnect |
 | disconnect | marcel | vera | ✅/✅ | ✅/🔌 | - | - | abort | Ban disconnect |
 | forfeit | fatima | diego | ✅/✅ | ✅/✅ | forfeit(moves) | 1 | forfeit | P1 forfeit after moves |
@@ -217,6 +217,21 @@ test.describe('elena vs hans: 역전승 4게임', () => {
 | OFF | 6 | 10/12 | 4.9m |
 | **OFF** | **3** | **12/12** | **6.4m** |
 
+## 태그 기반 필터 실행
+
+각 테스트에 `@phase:*`, `@feature:*`, `@scope:*` 태그가 부여되어 관심사별 실행 가능.
+
+```bash
+npx playwright test --grep @feature:disconnect   # disconnect 관련만
+npx playwright test --grep @scope:quick          # 빠른 테스트만 (<2분)
+npx playwright test --grep @phase:resting        # resting 페이즈 포함 테스트
+npx playwright test --grep-invert @scope:slow    # 느린 테스트 제외
+```
+
+**Phase tags** (`@phase:*`): `pick`, `ban`, `game`, `resting`, `selecting` — 실제 거치는 페이즈
+**Feature tags** (`@feature:*`): `disconnect`, `forfeit`, `ai`, `pool`, `countdown`, `rematch`, `mobile`, `lobby`, `reconnect`, `nostart`
+**Scope tags** (`@scope:*`): `quick` (<2분), `slow` (>2분)
+
 ## Claude 가이드라인
 
 - 테스트 실행 시 항상 HTML 리포트 사용 (`npm test` 후 `npm run report`)
@@ -236,13 +251,13 @@ test.describe('elena vs hans: 역전승 4게임', () => {
 
 | P1 | P2 | 시나리오 | Spec 파일 |
 |:---:|:---:|:---|:---|
-| elena | hans | 밴픽 역전승 | series-banpick |
-| boris | david | 밴픽 서든데스 P1 선행 | series-banpick |
-| yulia | luis | 밴픽 3연승 | series-banpick |
-| mei | ivan | 밴픽 4경기 | series-banpick |
-| ana | lola | 밴픽 서든데스 P2 선행 | series-banpick |
-| carlos | nina | 밴픽 0-2 역전 | series-banpick |
-| oscar | petra | 밴픽 조기승리 | series-banpick |
+| elena | hans | 밴픽 역전승 | series-scenarios |
+| boris | david | 밴픽 서든데스 P1 선행 | series-scenarios |
+| yulia | luis | 밴픽 3연승 | series-scenarios |
+| mei | ivan | 밴픽 4경기 | series-scenarios |
+| ana | lola | 밴픽 서든데스 P2 선행 | series-scenarios |
+| carlos | nina | 밴픽 0-2 역전 | series-scenarios |
+| oscar | petra | 밴픽 조기승리 | series-scenarios |
 | angel | bobby | Pick disconnect → abort | series-disconnect |
 | marcel | vera | Ban disconnect → abort | series-disconnect |
 | fatima | diego | Forfeit after moves | series-forfeit |

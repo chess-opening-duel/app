@@ -50,7 +50,7 @@ test.describe('angel vs bobby: Pick disconnect', () => {
   const pairUsers = ['angel', 'bobby'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('Pick phase disconnect → abort', async ({ browser }) => {
+  test('Pick phase disconnect → abort @phase:pick @feature:disconnect @scope:quick', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.angel,
@@ -135,7 +135,7 @@ test.describe('marcel vs vera: Ban disconnect', () => {
   const pairUsers = ['marcel', 'vera'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('Ban phase disconnect → abort', async ({ browser }) => {
+  test('Ban phase disconnect → abort @phase:pick @phase:ban @feature:disconnect @scope:quick', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.marcel,
@@ -238,7 +238,7 @@ test.describe('aaron vs jacob: Game disconnect → game loss', () => {
   const pairUsers = ['aaron', 'jacob'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('Game disconnect → game loss, series continues', async ({ browser }) => {
+  test('Game disconnect → game loss, series continues @phase:pick @phase:ban @phase:game @feature:disconnect @scope:quick', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.aaron,
@@ -356,7 +356,7 @@ test.describe('svetlana vs qing: 0-2 then game 3 disconnect → game loss', () =
   const pairUsers = ['svetlana', 'qing'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('0-2 then game 3 disconnect → game loss (score 1-2), series continues', async ({ browser }) => {
+  test('0-2 then game 3 disconnect → game loss (score 1-2), series continues @phase:pick @phase:ban @phase:game @feature:disconnect @scope:slow', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.svetlana,
@@ -498,7 +498,7 @@ test.describe('kwame vs sonia: Selecting timeout → random pick', () => {
   const pairUsers = ['kwame', 'sonia'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('Selecting timeout → random pick, game 2 starts', async ({ browser }) => {
+  test('Selecting timeout → random pick, game 2 starts @phase:pick @phase:ban @phase:game @phase:selecting @feature:disconnect @scope:slow', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.kwame,
@@ -603,7 +603,7 @@ test.describe('tomoko vs renata: Resting both DC → abort', () => {
   const pairUsers = ['tomoko', 'renata'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('Resting both DC → series abort', async ({ browser }) => {
+  test('Resting both DC → series abort @phase:pick @phase:ban @phase:game @phase:resting @feature:disconnect @scope:quick', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.tomoko,
@@ -706,7 +706,7 @@ test.describe('yarah vs suresh: Resting 1 DC → forfeit', () => {
   const pairUsers = ['yarah', 'suresh'];
   test.beforeAll(() => cleanupPairData(pairUsers));
 
-  test('Resting 1 DC → series forfeit (P1 wins)', async ({ browser }) => {
+  test('Resting 1 DC → series forfeit (P1 wins) @phase:pick @phase:ban @phase:game @phase:resting @feature:disconnect @scope:quick', async ({ browser }) => {
     const { player1Context, player2Context, player1, player2 } = await createTwoPlayerContexts(
       browser,
       users.yarah,

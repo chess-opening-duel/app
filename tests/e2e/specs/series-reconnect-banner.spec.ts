@@ -23,7 +23,7 @@ import {
  * | frances | emmanuel | Ban | P2 navigates to home | Banner visible, click returns to pick page |
  */
 
-test.describe('frances vs emmanuel: Reconnection banner', () => {
+test.describe('frances vs emmanuel: Reconnection banner @phase:pick @feature:reconnect @scope:quick', () => {
   test.describe.configure({ timeout: 90000 });
 
   const pairUsers = ['frances', 'emmanuel'];
