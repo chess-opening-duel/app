@@ -503,7 +503,7 @@ function cleanupPairData(usernames: string[]) {
       { "destUser.id": { $in: ${JSON.stringify(usernames)} } }
     ]});
   `.replace(/\n/g, ' ');
-  execSync(`docker exec chess-opening-duel-mongodb-1 mongosh lichess --quiet --eval '${mongoCommand}'`);
+  execSync(`docker exec app-mongodb-1 mongosh lichess --quiet --eval '${mongoCommand}'`);
 }
 ```
 
