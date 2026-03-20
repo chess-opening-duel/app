@@ -43,7 +43,6 @@ RUN apt update \
     && mkdir -p /var/log/supervisor
 
 ENV JAVA_HOME=/opt/java/openjdk
-ENV JAVA_OPTS="-Xms4g -Xmx4g"
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 ENV LANG=C.utf8
 COPY --from=eclipse-temurin:25-jdk $JAVA_HOME $JAVA_HOME
